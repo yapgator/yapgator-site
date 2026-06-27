@@ -17,10 +17,10 @@
   <meta name="twitter:title" content="YAPGATOR | We Make the Wave">
   <meta name="twitter:description" content="YAPGATOR is a community-driven Solana meme coin preparing to launch through Pump.fun. Community. Memes. Momentum.">
   <meta name="twitter:image" content="https://yapgator.com/assets/images/yapgator-hero.jpg">
-  <link rel="icon" href="assets/images/app-icon-192.png?v=8" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=8">
-  <link rel="manifest" href="site.webmanifest?v=8">
-  <link rel="stylesheet" href="assets/css/styles.css?v=8">
+  <link rel="icon" href="assets/images/app-icon-192.png?v=9" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=9">
+  <link rel="manifest" href="site.webmanifest?v=9">
+  <link rel="stylesheet" href="assets/css/styles.css?v=9">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -49,7 +49,7 @@
     <div class="intro-particles" aria-hidden="true"></div>
     <div class="intro-card" role="dialog" aria-modal="false" aria-labelledby="intro-title">
       <span class="intro-character-frame" aria-hidden="true">
-        <img src="assets/images/app-icon-192.png?v=8" width="96" height="96" alt="">
+        <img src="assets/images/app-icon-192.png?v=9" width="96" height="96" alt="">
       </span>
       <h2 id="intro-title">ENTERING THE SWAMP</h2>
       <button class="btn btn-primary" type="button" data-intro-close>Enter</button>
@@ -60,8 +60,8 @@
     <span class="header-energy-line" aria-hidden="true"></span>
     <section class="top-ticker" aria-label="YAPGATOR community ticker">
       <div class="ticker-track">
-        <span>YAPGATOR &bull; WE DON&rsquo;T CHASE THE WAVE &bull; WE MAKE THE WAVE &bull; MEMES &bull; COMMUNITY &bull; MOMENTUM &bull; ENTER THE SWAMP &bull;</span>
-        <span>YAPGATOR &bull; WE DON&rsquo;T CHASE THE WAVE &bull; WE MAKE THE WAVE &bull; MEMES &bull; COMMUNITY &bull; MOMENTUM &bull; ENTER THE SWAMP &bull;</span>
+        <span><b>YAPGATOR</b> &bull; <i>WE DON&rsquo;T CHASE THE WAVE</i> &bull; <b>WE MAKE THE WAVE</b> &bull; <i>MEMES</i> &bull; <b>COMMUNITY</b> &bull; <i>MOMENTUM</i> &bull; <b>ENTER THE SWAMP</b> &bull;</span>
+        <span><b>YAPGATOR</b> &bull; <i>WE DON&rsquo;T CHASE THE WAVE</i> &bull; <b>WE MAKE THE WAVE</b> &bull; <i>MEMES</i> &bull; <b>COMMUNITY</b> &bull; <i>MOMENTUM</i> &bull; <b>ENTER THE SWAMP</b> &bull;</span>
       </div>
     </section>
     <nav class="nav" aria-label="Primary navigation">
@@ -131,7 +131,7 @@
               </div>
             </div>
             <div class="swamp-status-actions">
-              <img class="status-gator" src="assets/images/app-icon-192.png?v=8" width="72" height="72" alt="" aria-hidden="true">
+              <img class="status-gator" src="assets/images/app-icon-192.png?v=9" width="72" height="72" alt="" aria-hidden="true">
               <a class="btn btn-primary" data-config-link="telegramBotUrl" href="https://t.me/YapgatorOfficialBot" target="_blank" rel="noopener noreferrer">Enter Telegram</a>
             </div>
           </div>
@@ -274,17 +274,41 @@
                   <stop offset=".55" stop-color="#28a9ff"/>
                   <stop offset="1" stop-color="#f5c84b"/>
                 </linearGradient>
+                <linearGradient id="routeFutureGlow" x1="0" x2="1">
+                  <stop offset="0" stop-color="#5131ff"/>
+                  <stop offset=".52" stop-color="#28a9ff"/>
+                  <stop offset="1" stop-color="#f5c84b"/>
+                </linearGradient>
+                <radialGradient id="waypointGlow">
+                  <stop offset="0" stop-color="#37ff86" stop-opacity=".9"/>
+                  <stop offset=".55" stop-color="#7e49ff" stop-opacity=".38"/>
+                  <stop offset="1" stop-color="#37ff86" stop-opacity="0"/>
+                </radialGradient>
+                <clipPath id="routeGatorClip">
+                  <circle cx="0" cy="0" r="31"/>
+                </clipPath>
                 <filter id="routeBloom">
                   <feGaussianBlur stdDeviation="5" result="blur"/>
                   <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
               </defs>
               <path class="water-channel" d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
-              <path class="route-path" data-route-path d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
+              <path class="route-path route-future" d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
+              <path class="route-path route-progress" data-route-path d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
+              <g class="waypoint-layer" aria-hidden="true">
+                <circle class="waypoint waypoint-1" cx="73" cy="510" r="24"/>
+                <circle class="waypoint waypoint-2" cx="314" cy="355" r="24"/>
+                <circle class="waypoint waypoint-3" cx="548" cy="203" r="24"/>
+                <circle class="waypoint waypoint-4" cx="782" cy="236" r="24"/>
+                <circle class="waypoint waypoint-5" cx="835" cy="330" r="24"/>
+                <circle class="waypoint waypoint-6" cx="936" cy="140" r="24"/>
+              </g>
               <g class="map-decor reeds"><path d="M115 445l-11-45M132 444l4-48M874 217l-7-56M892 221l13-62"/><path d="M104 398l-18-16M136 396l21-16M865 161l-23-13M906 160l22-19"/></g>
-              <g class="map-decor pads"><ellipse cx="193" cy="500" rx="32" ry="14"/><ellipse cx="445" cy="318" rx="27" ry="12"/><ellipse cx="642" cy="146" rx="30" ry="13"/><ellipse cx="835" cy="340" rx="26" ry="12"/></g>
               <g class="map-gator" data-route-gator>
-                <image class="route-gator-image" href="assets/images/app-icon-192.png?v=8" x="-27" y="-27" width="54" height="54" preserveAspectRatio="xMidYMid meet"/>
+                <ellipse class="route-gator-shadow" cx="0" cy="31" rx="27" ry="8"/>
+                <circle class="route-gator-halo" cx="0" cy="0" r="34"/>
+                <image class="route-gator-image" href="assets/images/app-icon-192.png?v=9" x="-34" y="-34" width="68" height="68" clip-path="url(#routeGatorClip)" preserveAspectRatio="xMidYMid slice"/>
+                <circle class="route-gator-rim" cx="0" cy="0" r="31"/>
               </g>
             </svg>
             <div class="fog-bank" aria-hidden="true"></div>
@@ -297,7 +321,7 @@
               <button class="map-marker marker-6" type="button" aria-pressed="false" data-roadmap-marker="5"><span>6</span><strong></strong><em data-current-label hidden>CURRENT</em></button>
             </div>
           </div>
-          <button class="btn btn-secondary replay-swim" type="button" data-replay-swim>Replay Swim</button>
+          <button class="btn btn-secondary replay-swim" type="button" data-replay-swim>REPLAY SWIM</button>
           <article class="roadmap-detail" data-roadmap-detail aria-live="polite">
             <p class="eyebrow" data-roadmap-detail-chapter>CHAPTER 1</p>
             <h3 data-roadmap-detail-title>GATOR WAKES UP</h3>
@@ -379,6 +403,6 @@
     </div>
   </footer>
 
-  <script src="assets/js/app.js?v=8" defer></script>
+  <script src="assets/js/app.js?v=9" defer></script>
 </body>
 </html>

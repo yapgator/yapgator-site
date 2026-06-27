@@ -588,13 +588,14 @@ const roadmapConfig = {
   const setRoadmapProgress = (status = telegramStatus, options = {}) => {
     const route = qs("[data-route-path]");
     const gator = qs("[data-route-gator]");
-    const markers = qsa("[data-roadmap-marker]");
     if (!route || !gator || typeof route.getTotalLength !== "function") return;
 
     const routeProgress = getRouteProgress(status);
     const length = route.getTotalLength();
     const point = route.getPointAtLength(length * routeProgress);
-    gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
+    route.style.setProperty("--route-complete", `${Math.max(0, length * routeProgress)}`);
+    route.style.setProperty("--route-remaining", `${Math.max(0, length * (1 - routeProgress))}`);
+    gator.style.transform = `translate(${point.x}px, ${point.y}px) scale(var(--route-gator-scale, 1))`;
     updateRoadmapMarkerStates(status, options.flashCurrent === true);
   };
 
@@ -623,7 +624,9 @@ const roadmapConfig = {
       const elapsed = Math.min(1, (now - start) / duration);
       const progress = 0.04 + (targetProgress - 0.04) * ease(elapsed);
       const point = route.getPointAtLength(length * progress);
-      gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
+      route.style.setProperty("--route-complete", `${Math.max(0, length * progress)}`);
+      route.style.setProperty("--route-remaining", `${Math.max(0, length * (1 - progress))}`);
+      gator.style.transform = `translate(${point.x}px, ${point.y}px) scale(var(--route-gator-scale, 1))`;
 
       if (elapsed < 1) {
         window.requestAnimationFrame(frame);
