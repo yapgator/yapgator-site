@@ -1,4 +1,4 @@
-const CACHE_NAME = "yapgator-shell-v10";
+const CACHE_NAME = "yapgator-shell-v11";
 const FALLBACK_URL = "index.html";
 
 self.addEventListener("install", (event) => {
