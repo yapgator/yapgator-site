@@ -1,20 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="YAPGATOR Y coin">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="YAPGATOR gator eye emblem">
   <defs>
-    <radialGradient id="gold" cx="35%" cy="25%" r="75%">
-      <stop offset="0" stop-color="#fff7bd"/>
-      <stop offset="0.48" stop-color="#f5c84b"/>
-      <stop offset="1" stop-color="#91650a"/>
+    <radialGradient id="bg" cx="34%" cy="24%" r="78%">
+      <stop offset="0" stop-color="#124c37"/>
+      <stop offset="0.55" stop-color="#041411"/>
+      <stop offset="1" stop-color="#010606"/>
     </radialGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
-  <rect width="128" height="128" rx="24" fill="#02120f"/>
-  <circle cx="64" cy="64" r="48" fill="url(#gold)" filter="url(#glow)"/>
-  <circle cx="64" cy="64" r="39" fill="none" stroke="#1b1200" stroke-width="5" opacity="0.5"/>
-  <path d="M35 35h18l12 20 12-20h18L73 70v25H57V70L35 35Z" fill="#06110d"/>
+  <rect width="128" height="128" rx="24" fill="url(#bg)"/>
+  <path d="M13 70c15-31 45-45 82-40 13 2 23 8 28 19-13-5-28-5-44-1L39 59C28 62 19 66 13 70Z" fill="#06120f"/>
+  <path d="M18 77c22-17 52-24 92-22 5 0 9 3 11 7-25 2-51 8-77 18-13 5-22 4-26-3Z" fill="#12362c"/>
+  <path d="M38 53c15-15 36-20 61-15 7 2 13 5 18 9-27-3-51 2-72 14l-7-8Z" fill="#37ff86" filter="url(#glow)"/>
+  <path d="M52 53c13-8 30-10 47-6-9 11-26 16-47 6Z" fill="#caff73"/>
+  <ellipse cx="75" cy="50" rx="12" ry="7" fill="#03100c"/>
+  <circle cx="79" cy="48" r="3" fill="#28a9ff"/>
+  <path d="M28 83h14l-7 16Zm25 4h13l-6 14Zm24-5h11l-5 12Z" fill="#f5fff9"/>
+  <path d="M22 72c27-22 61-30 101-23" fill="none" stroke="#28a9ff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M30 91c30 6 58 1 84-19" fill="none" stroke="#37ff86" stroke-width="5" stroke-linecap="round" opacity=".72"/>
+  <path d="M101 65l13 5-12 8" fill="none" stroke="#f5c84b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

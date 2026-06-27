@@ -1,7 +1,6 @@
 "use strict";
 
 const launchConfig = {
-  // Future launch values go here. Leave empty strings to keep Coming Soon states active.
   launched: false,
   launchDate: "",
   xUrl: "https://x.com/YAPGAT0R",
@@ -17,19 +16,69 @@ const launchConfig = {
   graduation: "PumpSwap"
 };
 
+const artworkConfig = {
+  hero: "assets/images/yapgator-hero.jpg",
+  roadmap: "assets/images/yapgator-roadmap.png",
+  market: "assets/images/yapgator-market.png",
+  community: "assets/images/yapgator-community.png",
+  unused: "assets/images/yapgator-new-2.png"
+};
+
+const marketDataConfig = {
+  enabled: false,
+  endpoint: "",
+  tokenMint: "",
+  refreshIntervalMs: 30000
+};
+
+const roadmapConfig = {
+  currentMarketCap: null,
+  milestones: [
+    {
+      targetMarketCap: "",
+      title: "GATOR WAKES UP",
+      description: "The first yaps hit the timeline."
+    },
+    {
+      targetMarketCap: "",
+      title: "SWAMP GETS LOUD",
+      description: "The community starts flooding the feed with original Yapgator memes."
+    },
+    {
+      targetMarketCap: "",
+      title: "YAP SEASON",
+      description: "Community contests, meme battles, and new Gator artwork."
+    },
+    {
+      targetMarketCap: "",
+      title: "GATOR STRONG",
+      description: "The Yapgator world expands with new scenes, stories, and community creations."
+    },
+    {
+      targetMarketCap: "",
+      title: "CITY TAKEOVER",
+      description: "The community chooses the next major Yapgator campaign."
+    },
+    {
+      targetMarketCap: "",
+      title: "MAKE THE WAVE",
+      description: "One Gator. One Fam. One Mission."
+    }
+  ]
+};
+
 (() => {
+  document.documentElement.classList.add("js");
+
   const qs = (selector, scope = document) => scope.querySelector(selector);
   const qsa = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
   const hasValue = (value) => typeof value === "string" && value.trim().length > 0;
   const safeText = (value, fallback = "") => (hasValue(value) ? value.trim() : fallback);
+  const isFiniteNumber = (value) => typeof value === "number" && Number.isFinite(value);
 
-  const setDisabledLink = (link, label) => {
-    if (!link) return;
-    link.textContent = label;
-    link.setAttribute("aria-disabled", "true");
-    link.removeAttribute("target");
-    link.removeAttribute("rel");
-    link.setAttribute("href", "#");
+  const setHidden = (node, hidden) => {
+    if (!node) return;
+    node.hidden = hidden;
   };
 
   const setActiveLink = (link, label, url) => {
@@ -39,6 +88,45 @@ const launchConfig = {
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener noreferrer");
     link.removeAttribute("aria-disabled");
+    setHidden(link, false);
+  };
+
+  const clearOptionalLink = (link) => {
+    if (!link) return;
+    link.removeAttribute("href");
+    link.removeAttribute("target");
+    link.removeAttribute("rel");
+    link.setAttribute("aria-disabled", "true");
+    setHidden(link, true);
+  };
+
+  const formatNumber = (value) => {
+    if (!isFiniteNumber(value)) return "";
+    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(value);
+  };
+
+  const formatMoney = (value, options = {}) => {
+    if (!isFiniteNumber(value)) return "";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: options.maximumFractionDigits ?? 6
+    }).format(value);
+  };
+
+  const parseMarketCap = (value) => {
+    if (typeof value === "number") return Number.isFinite(value) && value > 0 ? value : null;
+    if (!hasValue(value)) return null;
+    const parsed = Number(value.replace(/[$,\s]/g, ""));
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  };
+
+  const applyArtworkConfig = () => {
+    qsa("[data-artwork]").forEach((node) => {
+      const key = node.getAttribute("data-artwork");
+      const src = key ? artworkConfig[key] : "";
+      if (hasValue(src)) node.setAttribute("src", src.trim());
+    });
   };
 
   const applyLaunchConfig = () => {
@@ -59,39 +147,33 @@ const launchConfig = {
       }
     });
 
-    qsa("[data-launch-status]").forEach((node) => {
-      node.textContent = launchConfig.launched ? "THE SWAMP IS LIVE" : "PREPARING TO ENTER THE SWAMP";
-    });
-
-    qsa("[data-token-status]").forEach((node) => {
-      node.textContent = launchConfig.launched ? "Live" : "Coming Soon";
-    });
-
     qsa("[data-launch-date]").forEach((node) => {
-      node.textContent = hasValue(launchConfig.launchDate) ? `Launch Date: ${launchConfig.launchDate.trim()}` : "Launch Date: TBA";
+      const value = safeText(launchConfig.launchDate);
+      node.textContent = value;
+      node.classList.toggle("empty-value", !hasValue(value));
+      if (!hasValue(value)) node.innerHTML = '<span class="sr-only">Not configured</span>';
     });
 
     qsa("[data-contract-text]").forEach((node) => {
-      node.textContent = hasValue(launchConfig.contractAddress) ? launchConfig.contractAddress.trim() : "Coming Soon";
-    });
-
-    qsa("[data-telegram-community-text]").forEach((node) => {
-      node.textContent = hasValue(launchConfig.telegramGroupUrl) ? launchConfig.telegramGroupUrl.trim() : "Coming Soon";
+      const value = safeText(launchConfig.contractAddress);
+      node.textContent = value;
+      node.classList.toggle("empty-value", !hasValue(value));
+      if (!hasValue(value)) node.innerHTML = '<span class="sr-only">Not configured</span>';
     });
 
     qsa("[data-telegram-group-link]").forEach((link) => {
       if (hasValue(launchConfig.telegramGroupUrl)) {
-        setActiveLink(link, "Enter the Swamp", launchConfig.telegramGroupUrl);
+        setActiveLink(link, "Community Telegram", launchConfig.telegramGroupUrl);
       } else {
-        setDisabledLink(link, "Telegram Coming Soon");
+        clearOptionalLink(link);
       }
     });
 
     qsa("[data-buy-link]").forEach((link) => {
       if (hasValue(launchConfig.pumpFunUrl)) {
-        setActiveLink(link, "Buy $YAPGATOR", launchConfig.pumpFunUrl);
+        setActiveLink(link, link.classList.contains("nav-buy") ? "Buy" : "Buy on Pump.fun", launchConfig.pumpFunUrl);
       } else {
-        setDisabledLink(link, link.classList.contains("nav-buy") ? "Buy Coming Soon" : "Buy Coming Soon");
+        clearOptionalLink(link);
       }
     });
 
@@ -99,7 +181,7 @@ const launchConfig = {
       if (hasValue(launchConfig.chartUrl)) {
         setActiveLink(link, "View Chart", launchConfig.chartUrl);
       } else {
-        setDisabledLink(link, "Chart Coming Soon");
+        clearOptionalLink(link);
       }
     });
 
@@ -107,10 +189,28 @@ const launchConfig = {
       if (hasValue(launchConfig.contractAddress)) {
         button.disabled = false;
         button.textContent = "Copy Contract";
+        setHidden(button, false);
       } else {
         button.disabled = true;
-        button.textContent = "Copy Contract Coming Soon";
+        setHidden(button, true);
       }
+    });
+
+    qsa("[data-footer-telegram]").forEach((link) => {
+      const url = hasValue(launchConfig.telegramGroupUrl) ? launchConfig.telegramGroupUrl : launchConfig.telegramBotUrl;
+      if (hasValue(url)) link.setAttribute("href", url.trim());
+    });
+
+    qsa("[data-pump-footer]").forEach((node) => {
+      if (!hasValue(launchConfig.pumpFunUrl)) return;
+      const link = document.createElement("a");
+      link.className = node.className.replace("dock-inactive", "").trim();
+      link.setAttribute("href", launchConfig.pumpFunUrl.trim());
+      link.setAttribute("target", "_blank");
+      link.setAttribute("rel", "noopener noreferrer");
+      link.setAttribute("aria-label", "Open YAPGATOR on Pump.fun");
+      link.innerHTML = node.innerHTML;
+      node.replaceWith(link);
     });
   };
 
@@ -121,16 +221,25 @@ const launchConfig = {
 
     const hide = () => {
       overlay.classList.add("is-hidden");
-      sessionStorage.setItem("yapgatorIntroSeen", "true");
+      try {
+        sessionStorage.setItem("yapgatorIntroSeen", "true");
+      } catch (_error) {
+        return;
+      }
     };
 
-    if (sessionStorage.getItem("yapgatorIntroSeen") === "true") {
+    try {
+      if (sessionStorage.getItem("yapgatorIntroSeen") === "true") {
+        overlay.classList.add("is-hidden");
+        return;
+      }
+    } catch (_error) {
       overlay.classList.add("is-hidden");
       return;
     }
 
     closeButton?.addEventListener("click", hide);
-    window.setTimeout(hide, 2600);
+    window.setTimeout(hide, 2200);
   };
 
   const initMenu = () => {
@@ -228,17 +337,17 @@ const launchConfig = {
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.16 });
+    }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
 
     elements.forEach((element) => observer.observe(element));
   };
 
-  const guardDisabledLinks = () => {
-    qsa('a[aria-disabled="true"]').forEach((link) => {
-      link.addEventListener("click", (event) => {
-        if (link.getAttribute("aria-disabled") === "true") {
-          event.preventDefault();
-        }
+  const initLightBloom = () => {
+    qsa("[data-light-panel]").forEach((panel) => {
+      panel.addEventListener("pointermove", (event) => {
+        const rect = panel.getBoundingClientRect();
+        panel.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+        panel.style.setProperty("--my", `${event.clientY - rect.top}px`);
       });
     });
   };
@@ -249,14 +358,159 @@ const launchConfig = {
     });
   };
 
+  const initRoadmapMarkers = () => {
+    const buttons = qsa("[data-roadmap-marker]");
+    if (!buttons.length) return;
+
+    const openPanel = (button) => {
+      const targetId = button.getAttribute("aria-controls");
+      buttons.forEach((item) => {
+        const panelId = item.getAttribute("aria-controls");
+        const panel = panelId ? document.getElementById(panelId) : null;
+        const isTarget = item === button;
+        item.setAttribute("aria-expanded", String(isTarget));
+        if (panel) panel.hidden = !isTarget;
+      });
+      const targetPanel = targetId ? document.getElementById(targetId) : null;
+      targetPanel?.classList.add("is-open");
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => openPanel(button));
+      button.addEventListener("keydown", (event) => {
+        if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        const index = buttons.indexOf(button);
+        const nextIndex = (() => {
+          if (event.key === "Home") return 0;
+          if (event.key === "End") return buttons.length - 1;
+          if (event.key === "ArrowLeft" || event.key === "ArrowUp") return Math.max(0, index - 1);
+          return Math.min(buttons.length - 1, index + 1);
+        })();
+        buttons[nextIndex].focus();
+        openPanel(buttons[nextIndex]);
+      });
+    });
+  };
+
+  const setRoadmapProgress = (marketCap) => {
+    const route = qs("[data-route-path]");
+    const gator = qs("[data-route-gator]");
+    const markers = qsa("[data-roadmap-marker]");
+    if (!route || !gator || typeof route.getTotalLength !== "function") return;
+
+    const targets = roadmapConfig.milestones
+      .map((milestone) => parseMarketCap(milestone.targetMarketCap))
+      .filter((value) => value !== null)
+      .sort((a, b) => a - b);
+
+    let progress = 0.04;
+    if (isFiniteNumber(marketCap) && targets.length) {
+      const highestTarget = targets[targets.length - 1];
+      const achieved = targets.filter((target) => marketCap >= target).length;
+      const nextTarget = targets[achieved] ?? highestTarget;
+      const previousTarget = targets[achieved - 1] ?? 0;
+      const segmentRange = Math.max(nextTarget - previousTarget, 1);
+      const segmentProgress = Math.max(0, Math.min(1, (marketCap - previousTarget) / segmentRange));
+      progress = Math.min(0.96, ((achieved + segmentProgress) / targets.length) * 0.92 + 0.04);
+    }
+
+    const length = route.getTotalLength();
+    const point = route.getPointAtLength(length * progress);
+    gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
+
+    markers.forEach((marker, index) => {
+      const target = parseMarketCap(roadmapConfig.milestones[index]?.targetMarketCap);
+      marker.classList.toggle("is-complete", target !== null && isFiniteNumber(marketCap) && marketCap >= target);
+    });
+  };
+
+  const validateMarketData = (data) => {
+    if (!data || typeof data !== "object") return null;
+    const price = Number(data.price);
+    const marketCap = Number(data.marketCap);
+    const volume24h = Number(data.volume24h);
+    const bondingCurveProgress = Number(data.bondingCurveProgress);
+    const lastUpdated = hasValue(data.lastUpdated) ? data.lastUpdated.trim() : new Date().toISOString();
+
+    return {
+      price: Number.isFinite(price) && price > 0 ? price : null,
+      marketCap: Number.isFinite(marketCap) && marketCap > 0 ? marketCap : null,
+      volume24h: Number.isFinite(volume24h) && volume24h >= 0 ? volume24h : null,
+      bondingCurveProgress: Number.isFinite(bondingCurveProgress) && bondingCurveProgress >= 0 && bondingCurveProgress <= 100 ? bondingCurveProgress : null,
+      lastUpdated
+    };
+  };
+
+  window.updateMarketData = (data) => {
+    const feed = qs("[data-market-feed]");
+    if (!feed) return false;
+    const values = validateMarketData(data);
+    if (!values) return false;
+
+    const priceNode = qs("[data-market-price]");
+    const capNode = qs("[data-market-cap]");
+    const volumeNode = qs("[data-market-volume]");
+    const progressNode = qs("[data-market-progress]");
+    const updatedNode = qs("[data-market-updated]");
+
+    if (values.price !== null && priceNode) priceNode.textContent = formatMoney(values.price);
+    if (values.marketCap !== null && capNode) capNode.textContent = formatMoney(values.marketCap, { maximumFractionDigits: 0 });
+    if (values.volume24h !== null && volumeNode) volumeNode.textContent = formatMoney(values.volume24h, { maximumFractionDigits: 0 });
+    if (values.bondingCurveProgress !== null && progressNode) progressNode.textContent = `${formatNumber(values.bondingCurveProgress)}%`;
+    if (updatedNode) {
+      const date = new Date(values.lastUpdated);
+      updatedNode.textContent = Number.isNaN(date.getTime()) ? values.lastUpdated : date.toLocaleString();
+    }
+
+    if (values.marketCap !== null) {
+      roadmapConfig.currentMarketCap = values.marketCap;
+      setRoadmapProgress(values.marketCap);
+    }
+
+    feed.hidden = false;
+    return true;
+  };
+
+  const initMarketFeed = () => {
+    const feed = qs("[data-market-feed]");
+    if (feed) feed.hidden = true;
+    if (!marketDataConfig.enabled) return;
+    if (!hasValue(marketDataConfig.endpoint)) return;
+
+    // Future launch work: add the selected public market endpoint to marketDataConfig.endpoint.
+    // If the provider requires a token identifier, add the public mint to marketDataConfig.tokenMint.
+    const fetchMarketData = async () => {
+      try {
+        const url = new URL(marketDataConfig.endpoint);
+        if (hasValue(marketDataConfig.tokenMint)) {
+          url.searchParams.set("tokenMint", marketDataConfig.tokenMint.trim());
+        }
+        const response = await fetch(url.toString(), { cache: "no-store" });
+        if (!response.ok) return;
+        const data = await response.json();
+        window.updateMarketData(data);
+      } catch (_error) {
+        return;
+      }
+    };
+
+    fetchMarketData();
+    window.setInterval(fetchMarketData, Math.max(5000, marketDataConfig.refreshIntervalMs));
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
+    applyArtworkConfig();
     applyLaunchConfig();
     initYear();
     initIntro();
     initMenu();
     initFaq();
     initCopyContract();
+    initRoadmapMarkers();
     initReveal();
-    guardDisabledLinks();
+    initLightBloom();
+    initMarketFeed();
+    window.requestAnimationFrame(() => setRoadmapProgress(roadmapConfig.currentMarketCap));
   });
 })();
