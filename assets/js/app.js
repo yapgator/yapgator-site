@@ -76,7 +76,6 @@ const roadmapConfig = {
   const safeText = (value, fallback = "") => (hasValue(value) ? value.trim() : fallback);
   const isFiniteNumber = (value) => typeof value === "number" && Number.isFinite(value);
   let deferredInstallPrompt = null;
-  let installReturnFocus = null;
 
   const setHidden = (node, hidden) => {
     if (!node) return;
@@ -371,58 +370,26 @@ const roadmapConfig = {
     });
   };
 
-  const closeInstallDialog = () => {
-    const dialog = qs("[data-install-dialog]");
-    if (!dialog) return;
-    dialog.hidden = true;
-    document.removeEventListener("keydown", onInstallDialogKeydown);
-    if (installReturnFocus && typeof installReturnFocus.focus === "function") {
-      installReturnFocus.focus();
-    }
-    installReturnFocus = null;
-  };
-
-  function onInstallDialogKeydown(event) {
-    if (event.key === "Escape") closeInstallDialog();
-  }
-
-  const openInstallDialog = (trigger) => {
-    const dialog = qs("[data-install-dialog]");
-    const copy = qs("[data-install-dialog-copy]", dialog || document);
-    const closeButton = qs("[data-install-dialog-close]", dialog || document);
-    if (!dialog || !copy) return;
-
-    installReturnFocus = trigger;
-    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-    copy.textContent = isIos
-      ? "Open this page in Safari, tap Share, then choose \u201cAdd to Home Screen.\u201d"
-      : "Open your browser menu and choose \u201cInstall app\u201d or \u201cAdd to Home screen.\u201d";
-    dialog.hidden = false;
-    closeButton?.focus();
-    document.addEventListener("keydown", onInstallDialogKeydown);
-  };
-
-  const handleInstallApp = async (event) => {
-    const trigger = event.currentTarget;
+  const handleInstallApp = (event) => {
+    event.preventDefault();
     document.dispatchEvent(new CustomEvent("yapgator:close-menu"));
 
-    if (isStandaloneApp()) {
+    if (isStandaloneApp() || !deferredInstallPrompt) {
+      deferredInstallPrompt = null;
       setInstallControlsHidden(true);
-      return;
-    }
-
-    if (!deferredInstallPrompt) {
-      openInstallDialog(trigger);
       return;
     }
 
     const promptEvent = deferredInstallPrompt;
     deferredInstallPrompt = null;
+    setInstallControlsHidden(true);
     try {
       promptEvent.prompt();
-      await promptEvent.userChoice;
+      if (promptEvent.userChoice && typeof promptEvent.userChoice.catch === "function") {
+        promptEvent.userChoice.catch(() => {});
+      }
     } catch (_error) {
-      openInstallDialog(trigger);
+      setInstallControlsHidden(true);
     }
   };
 
@@ -430,28 +397,26 @@ const roadmapConfig = {
     const installButtons = qsa("[data-install-app]");
     if (!installButtons.length) return;
 
-    if (isStandaloneApp()) {
-      setInstallControlsHidden(true);
-    }
+    setInstallControlsHidden(true);
 
     window.addEventListener("beforeinstallprompt", (event) => {
       event.preventDefault();
+      if (isStandaloneApp()) {
+        deferredInstallPrompt = null;
+        setInstallControlsHidden(true);
+        return;
+      }
       deferredInstallPrompt = event;
-      if (!isStandaloneApp()) setInstallControlsHidden(false);
+      setInstallControlsHidden(false);
     });
 
     window.addEventListener("appinstalled", () => {
       deferredInstallPrompt = null;
       setInstallControlsHidden(true);
-      closeInstallDialog();
     });
 
     installButtons.forEach((button) => {
       button.addEventListener("click", handleInstallApp);
-    });
-
-    qsa("[data-install-dialog-close]").forEach((button) => {
-      button.addEventListener("click", closeInstallDialog);
     });
   };
 

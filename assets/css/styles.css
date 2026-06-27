@@ -111,7 +111,6 @@ body::before {
 main,
 .site-footer,
 .intro-overlay,
-.install-dialog,
 .skip-link {
   position: relative;
 }
@@ -1448,57 +1447,6 @@ dd {
 
 .faq-item button[aria-expanded="true"] {
   background-size: 100% 2px;
-}
-
-.install-dialog {
-  position: fixed;
-  inset: 0;
-  z-index: 2400;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-}
-
-.install-dialog-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 6, 6, 0.72);
-}
-
-.install-dialog-panel {
-  position: relative;
-  width: min(460px, 100%);
-  padding: 1.4rem;
-  border: 1px solid rgba(55, 255, 134, 0.36);
-  border-radius: var(--radius);
-  background:
-    radial-gradient(circle at 30% 20%, rgba(55, 255, 134, 0.18), transparent 14rem),
-    linear-gradient(145deg, rgba(3, 24, 21, 0.96), rgba(1, 8, 9, 0.98));
-  box-shadow: 0 0 46px rgba(55, 255, 134, 0.22), 0 0 34px rgba(40, 169, 255, 0.14);
-}
-
-.install-dialog-panel h2 {
-  margin: 0 0 0.7rem;
-}
-
-.install-dialog-panel p:not(.eyebrow) {
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.install-dialog-close {
-  position: absolute;
-  right: 0.8rem;
-  top: 0.8rem;
-  min-height: 40px;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid rgba(245, 200, 75, 0.32);
-  border-radius: var(--radius);
-  color: var(--text);
-  background: rgba(245, 200, 75, 0.1);
-  font: 900 0.78rem/1 var(--font);
-  text-transform: uppercase;
-  cursor: pointer;
 }
 
 .site-footer {
