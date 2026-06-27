@@ -20,7 +20,7 @@
   <link rel="icon" href="assets/images/app-icon-192.png?v=5" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=4">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/styles.css?v=6">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -74,7 +74,6 @@
   <header class="site-header" data-site-header>
     <span class="header-energy-line" aria-hidden="true"></span>
     <nav class="nav" aria-label="Primary navigation">
-      <a class="brand brand-empty" href="#home" aria-label="YAPGATOR home"><span class="sr-only">YAPGATOR home</span></a>
       <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="primary-menu" aria-expanded="false" data-menu-toggle>
         <span></span><span></span><span></span>
       </button>
@@ -84,14 +83,21 @@
         <a href="#token">Token</a>
         <a href="#how-to-buy">How to Buy</a>
         <a href="#gator-map">Gator Map</a>
+        <a href="#install-app">Get App</a>
         <a href="#community">Community</a>
         <a href="#faq">FAQ</a>
         <a class="nav-action" data-config-link="xUrl" href="https://x.com/YAPGAT0R" target="_blank" rel="noopener noreferrer">X</a>
-        <button class="nav-action nav-install" type="button" data-install-app hidden>Install App</button>
         <a class="nav-action nav-buy" data-buy-link hidden>Buy</a>
       </div>
     </nav>
   </header>
+
+  <section class="top-ticker" aria-label="YAPGATOR community ticker">
+    <div class="ticker-track">
+      <span>YAP LOUD</span><b>&bull;</b><span>BUILD THE SWAMP</span><b>&bull;</b><span>MAKE THE WAVE</span><b>&bull;</b><span>YAPGATOR</span><b>&bull;</b><span>COMMUNITY POWERED</span><b>&bull;</b><span>MEMES. COMMUNITY. MOMENTUM.</span><b>&bull;</b>
+      <span>YAP LOUD</span><b>&bull;</b><span>BUILD THE SWAMP</span><b>&bull;</b><span>MAKE THE WAVE</span><b>&bull;</b><span>YAPGATOR</span><b>&bull;</b><span>COMMUNITY POWERED</span><b>&bull;</b><span>MEMES. COMMUNITY. MOMENTUM.</span><b>&bull;</b>
+    </div>
+  </section>
 
   <main id="main">
     <section class="hero" id="home">
@@ -122,49 +128,47 @@
         </figure>
         <aside class="swamp-status reveal" data-swamp-status data-light-panel aria-labelledby="swamp-status-title">
           <div class="swamp-status-copy">
-            <p class="eyebrow">SWAMP STATUS</p>
-            <h2 id="swamp-status-title">LIVE CHAPTER SIGNAL</h2>
-            <p class="swamp-status-message" data-swamp-status-message>Swamp signal updating</p>
-            <dl class="swamp-status-stats" data-swamp-status-live hidden>
-              <div>
-                <dt>Telegram Members</dt>
-                <dd data-swamp-members>--</dd>
+            <div class="swamp-status-main">
+              <p class="eyebrow">SWAMP STATUS</p>
+              <h2 id="swamp-status-title">LIVE TELEGRAM CHAPTERS</h2>
+              <p class="swamp-status-message" data-swamp-status-message>Swamp signal updating</p>
+              <dl class="swamp-status-stats" data-swamp-status-live hidden>
+                <div>
+                  <dt>Telegram Members</dt>
+                  <dd><span data-swamp-members>--</span></dd>
+                </div>
+                <div>
+                  <dt>Current Chapter</dt>
+                  <dd data-swamp-chapter>--</dd>
+                </div>
+                <div>
+                  <dt>Next Target</dt>
+                  <dd data-swamp-next-target>--</dd>
+                </div>
+              </dl>
+              <div class="swamp-progress" data-swamp-progress hidden>
+                <div class="swamp-progress-label">
+                  <span data-swamp-progress-text>-- / 50</span>
+                  <span data-swamp-progress-percent>0%</span>
+                </div>
+                <div class="swamp-progress-track" aria-hidden="true">
+                  <span data-swamp-progress-fill></span>
+                </div>
               </div>
-              <div>
-                <dt>Current Chapter</dt>
-                <dd data-swamp-chapter>--</dd>
-              </div>
-              <div>
-                <dt>Next Target</dt>
-                <dd data-swamp-next-target>--</dd>
-              </div>
-            </dl>
-            <div class="swamp-progress" data-swamp-progress hidden>
-              <div class="swamp-progress-label">
-                <span data-swamp-progress-text>-- / 50 members</span>
-                <span data-swamp-progress-percent>0%</span>
-              </div>
-              <div class="swamp-progress-track" aria-hidden="true">
-                <span data-swamp-progress-fill></span>
-              </div>
+              <p class="swamp-status-updated" data-swamp-updated>Updates automatically</p>
             </div>
-            <p class="swamp-status-updated" data-swamp-updated></p>
             <div class="swamp-status-actions">
-              <button class="status-gator" type="button" data-gator-sound aria-label="Play Yapgator swamp growl">
-                <svg viewBox="0 0 96 96" focusable="false" aria-hidden="true"><use href="#gator-emblem-symbol"></use></svg>
-                <span class="status-gator-ripple" aria-hidden="true"></span>
-              </button>
+              <div class="status-gator-control">
+                <button class="status-gator" type="button" data-gator-action aria-label="Animate Yapgator">
+                  <img src="assets/images/app-icon-192.png" width="72" height="72" alt="" aria-hidden="true">
+                  <span class="status-gator-ripple" aria-hidden="true"></span>
+                </button>
+                <span>TAP THE GATOR</span>
+              </div>
               <a class="btn btn-primary" data-config-link="telegramBotUrl" href="https://t.me/YapgatorOfficialBot" target="_blank" rel="noopener noreferrer">Enter Telegram</a>
             </div>
           </div>
         </aside>
-      </div>
-    </section>
-
-    <section class="meme-ticker" aria-label="YAPGATOR meme ticker">
-      <div class="ticker-track">
-        <span>YAPGATOR</span><b>&bull;</b><span>COMMUNITY</span><b>&bull;</b><span>MEMES</span><b>&bull;</b><span>MOMENTUM</span><b>&bull;</b><span>GATOR STRONG</span><b>&bull;</b><span>SOLANA</span><b>&bull;</b><span>THE SWAMP IS GETTING LOUD</span><b>&bull;</b><span>WE MAKE THE WAVE</span><b>&bull;</b>
-        <span>YAPGATOR</span><b>&bull;</b><span>COMMUNITY</span><b>&bull;</b><span>MEMES</span><b>&bull;</b><span>MOMENTUM</span><b>&bull;</b><span>GATOR STRONG</span><b>&bull;</b><span>SOLANA</span><b>&bull;</b><span>THE SWAMP IS GETTING LOUD</span><b>&bull;</b><span>WE MAKE THE WAVE</span><b>&bull;</b>
       </div>
     </section>
 
@@ -208,7 +212,7 @@
           <p class="eyebrow">TAKE THE SWAMP WITH YOU</p>
           <h2 class="sweep-heading">INSTALL THE YAPGATOR APP</h2>
           <p>Get the full Yapgator experience straight from your home screen. Updates to the live website automatically appear in the app.</p>
-          <button class="btn btn-primary install-cta" type="button" data-install-app hidden>INSTALL APP</button>
+          <button class="btn btn-primary install-cta" type="button" data-install-app disabled aria-disabled="true">GET THE APP</button>
           <p class="install-note">One tap. One Gator. The whole swamp.</p>
         </div>
         <figure class="install-media">
@@ -293,50 +297,50 @@
           <h2 class="sweep-heading">THE GATOR MAP</h2>
           <p>A live Telegram chapter swim through the Yapgator swamp.</p>
         </div>
-        <div class="swamp-map reveal" data-roadmap data-light-panel aria-label="Interactive Yapgator swamp roadmap">
-          <img class="map-art" data-artwork="roadmap" src="assets/images/yapgator-roadmap.png" width="1402" height="1122" alt="" loading="lazy" aria-hidden="true">
-          <div class="map-shade" aria-hidden="true"></div>
-          <svg class="map-svg" viewBox="0 0 1000 620" role="img" aria-label="Winding swamp route with Yapgator milestone markers">
-            <defs>
-              <linearGradient id="routeGlow" x1="0" x2="1">
-                <stop offset="0" stop-color="#37ff86"/>
-                <stop offset=".55" stop-color="#28a9ff"/>
-                <stop offset="1" stop-color="#f5c84b"/>
-              </linearGradient>
-              <filter id="routeBloom">
-                <feGaussianBlur stdDeviation="5" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <path class="water-channel" d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
-            <path class="route-path" data-route-path d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
-            <g class="map-decor reeds"><path d="M115 445l-11-45M132 444l4-48M874 217l-7-56M892 221l13-62"/><path d="M104 398l-18-16M136 396l21-16M865 161l-23-13M906 160l22-19"/></g>
-            <g class="map-decor pads"><ellipse cx="193" cy="500" rx="32" ry="14"/><ellipse cx="445" cy="318" rx="27" ry="12"/><ellipse cx="642" cy="146" rx="30" ry="13"/><ellipse cx="835" cy="340" rx="26" ry="12"/></g>
-            <g class="map-gator" data-route-gator>
-              <ellipse class="gator-ripple" cx="0" cy="0" rx="38" ry="16"/>
-              <path d="M-38 2c18-16 45-17 69-5l18-8-10 17 10 16-19-7C5 27-22 22-38 2Z" fill="#06120f" stroke="#37ff86" stroke-width="4"/>
-              <path d="M-16-5c12-5 27-4 41 2-10 7-25 8-41-2Z" fill="#95ff6b"/>
-              <circle cx="8" cy="-3" r="3" fill="#28a9ff"/>
-            </g>
-          </svg>
-          <div class="fog-bank" aria-hidden="true"></div>
-          <div class="marker-layer">
-            <button class="map-marker marker-1" type="button" aria-expanded="true" aria-controls="roadmap-panel-1" data-roadmap-marker="0" data-target="50"><span>1</span><strong>GATOR WAKES UP<small>50 members</small><em data-current-label hidden>CURRENT CHAPTER</em></strong></button>
-            <button class="map-marker marker-2" type="button" aria-expanded="false" aria-controls="roadmap-panel-2" data-roadmap-marker="1" data-target="100"><span>2</span><strong>SWAMP GETS LOUD<small>100 members</small><em data-current-label hidden>CURRENT CHAPTER</em></strong></button>
-            <button class="map-marker marker-3" type="button" aria-expanded="false" aria-controls="roadmap-panel-3" data-roadmap-marker="2" data-target="250"><span>3</span><strong>YAP SEASON<small>250 members</small><em data-current-label hidden>CURRENT CHAPTER</em></strong></button>
-            <button class="map-marker marker-4" type="button" aria-expanded="false" aria-controls="roadmap-panel-4" data-roadmap-marker="3" data-target="500"><span>4</span><strong>GATOR STRONG<small>500 members</small><em data-current-label hidden>CURRENT CHAPTER</em></strong></button>
-            <button class="map-marker marker-5" type="button" aria-expanded="false" aria-controls="roadmap-panel-5" data-roadmap-marker="4" data-target="1000"><span>5</span><strong>CITY TAKEOVER<small>1,000 members</small><em data-current-label hidden>CURRENT CHAPTER</em></strong></button>
-            <button class="map-marker marker-6" type="button" aria-expanded="false" aria-controls="roadmap-panel-6" data-roadmap-marker="5" data-target="1500"><span>6</span><strong>MAKE THE WAVE<small>1,500 members</small><em data-current-label hidden>CURRENT CHAPTER</em></strong></button>
-          </div>
-          <div class="map-panels" aria-live="polite">
-            <article class="map-panel is-open" id="roadmap-panel-1"><h3>GATOR WAKES UP</h3><p><strong>50 Telegram members.</strong> The first yaps hit the timeline.</p></article>
-            <article class="map-panel" id="roadmap-panel-2" hidden><h3>SWAMP GETS LOUD</h3><p><strong>100 Telegram members.</strong> The community starts flooding the feed with original Yapgator memes.</p></article>
-            <article class="map-panel" id="roadmap-panel-3" hidden><h3>YAP SEASON</h3><p><strong>250 Telegram members.</strong> Community contests, meme battles, and new Gator artwork.</p></article>
-            <article class="map-panel" id="roadmap-panel-4" hidden><h3>GATOR STRONG</h3><p><strong>500 Telegram members.</strong> The Yapgator world expands with new scenes, stories, and community creations.</p></article>
-            <article class="map-panel" id="roadmap-panel-5" hidden><h3>CITY TAKEOVER</h3><p><strong>1,000 Telegram members.</strong> The community chooses the next major Yapgator campaign.</p></article>
-            <article class="map-panel" id="roadmap-panel-6" hidden><h3>MAKE THE WAVE</h3><p><strong>1,500 Telegram members.</strong> One Gator. One Fam. One Mission.</p></article>
+        <div class="roadmap-shell reveal" data-roadmap data-light-panel aria-label="Interactive Yapgator swamp roadmap">
+          <div class="swamp-map">
+            <img class="map-art" data-artwork="roadmap" src="assets/images/yapgator-roadmap.png" width="1402" height="1122" alt="" loading="lazy" aria-hidden="true">
+            <div class="map-shade" aria-hidden="true"></div>
+            <svg class="map-svg" viewBox="0 0 1000 620" role="img" aria-label="Winding swamp route with Yapgator milestone markers">
+              <defs>
+                <linearGradient id="routeGlow" x1="0" x2="1">
+                  <stop offset="0" stop-color="#37ff86"/>
+                  <stop offset=".55" stop-color="#28a9ff"/>
+                  <stop offset="1" stop-color="#f5c84b"/>
+                </linearGradient>
+                <filter id="routeBloom">
+                  <feGaussianBlur stdDeviation="5" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+              <path class="water-channel" d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
+              <path class="route-path" data-route-path d="M73 510 C155 408 252 458 314 355 C384 238 503 314 548 203 C594 90 744 127 782 236 C821 350 900 315 936 140"/>
+              <g class="map-decor reeds"><path d="M115 445l-11-45M132 444l4-48M874 217l-7-56M892 221l13-62"/><path d="M104 398l-18-16M136 396l21-16M865 161l-23-13M906 160l22-19"/></g>
+              <g class="map-decor pads"><ellipse cx="193" cy="500" rx="32" ry="14"/><ellipse cx="445" cy="318" rx="27" ry="12"/><ellipse cx="642" cy="146" rx="30" ry="13"/><ellipse cx="835" cy="340" rx="26" ry="12"/></g>
+              <g class="map-gator" data-route-gator>
+                <ellipse class="gator-ripple" cx="0" cy="0" rx="38" ry="16"/>
+                <path d="M-38 2c18-16 45-17 69-5l18-8-10 17 10 16-19-7C5 27-22 22-38 2Z" fill="#06120f" stroke="#37ff86" stroke-width="4"/>
+                <path d="M-16-5c12-5 27-4 41 2-10 7-25 8-41-2Z" fill="#95ff6b"/>
+                <circle cx="8" cy="-3" r="3" fill="#28a9ff"/>
+              </g>
+            </svg>
+            <div class="fog-bank" aria-hidden="true"></div>
+            <div class="marker-layer">
+              <button class="map-marker marker-1" type="button" aria-pressed="true" data-roadmap-marker="0" data-target="50"><span>1</span><strong>GATOR WAKES UP</strong><em data-current-label hidden>CURRENT</em></button>
+              <button class="map-marker marker-2" type="button" aria-pressed="false" data-roadmap-marker="1" data-target="100"><span>2</span><strong>SWAMP GETS LOUD</strong><em data-current-label hidden>CURRENT</em></button>
+              <button class="map-marker marker-3" type="button" aria-pressed="false" data-roadmap-marker="2" data-target="250"><span>3</span><strong>YAP SEASON</strong><em data-current-label hidden>CURRENT</em></button>
+              <button class="map-marker marker-4" type="button" aria-pressed="false" data-roadmap-marker="3" data-target="500"><span>4</span><strong>GATOR STRONG</strong><em data-current-label hidden>CURRENT</em></button>
+              <button class="map-marker marker-5" type="button" aria-pressed="false" data-roadmap-marker="4" data-target="1000"><span>5</span><strong>CITY TAKEOVER</strong><em data-current-label hidden>CURRENT</em></button>
+              <button class="map-marker marker-6" type="button" aria-pressed="false" data-roadmap-marker="5" data-target="1500"><span>6</span><strong>MAKE THE WAVE</strong><em data-current-label hidden>CURRENT</em></button>
+            </div>
           </div>
           <button class="btn btn-secondary replay-swim" type="button" data-replay-swim>Replay Swim</button>
+          <article class="roadmap-detail" data-roadmap-detail aria-live="polite">
+            <p class="eyebrow" data-roadmap-detail-chapter>CHAPTER 1</p>
+            <h3 data-roadmap-detail-title>GATOR WAKES UP</h3>
+            <p class="roadmap-target" data-roadmap-detail-target>Target: 50 Telegram members</p>
+            <p data-roadmap-detail-description>The first yaps hit the timeline.</p>
+          </article>
         </div>
         <p class="disclaimer reveal">These are community goals and celebrations, not guarantees of price, profit, market capitalization, exchange listings, partnerships, or future value.</p>
       </div>
@@ -412,6 +416,6 @@
     </div>
   </footer>
 
-  <script src="assets/js/app.js" defer></script>
+  <script src="assets/js/app.js?v=6" defer></script>
 </body>
 </html>

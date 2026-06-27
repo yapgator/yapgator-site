@@ -32,36 +32,41 @@ const marketDataConfig = {
 };
 
 const roadmapConfig = {
-  currentMarketCap: null,
   chapterTargets: [50, 100, 250, 500, 1000, 1500],
   milestones: [
     {
-      targetMarketCap: "",
+      chapter: 1,
+      target: 50,
       title: "GATOR WAKES UP",
       description: "The first yaps hit the timeline."
     },
     {
-      targetMarketCap: "",
+      chapter: 2,
+      target: 100,
       title: "SWAMP GETS LOUD",
       description: "The community starts flooding the feed with original Yapgator memes."
     },
     {
-      targetMarketCap: "",
+      chapter: 3,
+      target: 250,
       title: "YAP SEASON",
       description: "Community contests, meme battles, and new Gator artwork."
     },
     {
-      targetMarketCap: "",
+      chapter: 4,
+      target: 500,
       title: "GATOR STRONG",
       description: "The Yapgator world expands with new scenes, stories, and community creations."
     },
     {
-      targetMarketCap: "",
+      chapter: 5,
+      target: 1000,
       title: "CITY TAKEOVER",
       description: "The community chooses the next major Yapgator campaign."
     },
     {
-      targetMarketCap: "",
+      chapter: 6,
+      target: 1500,
       title: "MAKE THE WAVE",
       description: "One Gator. One Fam. One Mission."
     }
@@ -77,9 +82,12 @@ const roadmapConfig = {
   const safeText = (value, fallback = "") => (hasValue(value) ? value.trim() : fallback);
   const isFiniteNumber = (value) => typeof value === "number" && Number.isFinite(value);
   let deferredInstallPrompt = null;
+  let appInstalled = false;
   let telegramStatus = null;
   let roadmapEntranceStarted = false;
   let activeRoadmapAnimation = 0;
+  let selectedRoadmapIndex = 0;
+  let roadmapSelectionTouched = false;
 
   const setHidden = (node, hidden) => {
     if (!node) return;
@@ -117,13 +125,6 @@ const roadmapConfig = {
       currency: "USD",
       maximumFractionDigits: options.maximumFractionDigits ?? 6
     }).format(value);
-  };
-
-  const parseMarketCap = (value) => {
-    if (typeof value === "number") return Number.isFinite(value) && value > 0 ? value : null;
-    if (!hasValue(value)) return null;
-    const parsed = Number(value.replace(/[$,\s]/g, ""));
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
   };
 
   const applyArtworkConfig = () => {
@@ -368,10 +369,39 @@ const roadmapConfig = {
     return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
   };
 
-  const setInstallControlsHidden = (hidden) => {
+  const updateInstallControls = () => {
     qsa("[data-install-app]").forEach((button) => {
-      button.hidden = hidden;
+      button.hidden = false;
+      if (appInstalled || isStandaloneApp()) {
+        button.textContent = "APP INSTALLED";
+        button.disabled = true;
+        button.setAttribute("aria-disabled", "true");
+        return;
+      }
+
+      button.textContent = "GET THE APP";
+      const unavailable = !deferredInstallPrompt;
+      button.disabled = unavailable;
+      button.setAttribute("aria-disabled", String(unavailable));
     });
+  };
+
+  const handleBeforeInstallPrompt = (event) => {
+    event.preventDefault();
+    if (isStandaloneApp()) {
+      deferredInstallPrompt = null;
+      appInstalled = true;
+      updateInstallControls();
+      return;
+    }
+    deferredInstallPrompt = event;
+    updateInstallControls();
+  };
+
+  const handleAppInstalled = () => {
+    deferredInstallPrompt = null;
+    appInstalled = true;
+    updateInstallControls();
   };
 
   const handleInstallApp = (event) => {
@@ -380,20 +410,20 @@ const roadmapConfig = {
 
     if (isStandaloneApp() || !deferredInstallPrompt) {
       deferredInstallPrompt = null;
-      setInstallControlsHidden(true);
+      updateInstallControls();
       return;
     }
 
     const promptEvent = deferredInstallPrompt;
     deferredInstallPrompt = null;
-    setInstallControlsHidden(true);
+    updateInstallControls();
     try {
       promptEvent.prompt();
       if (promptEvent.userChoice && typeof promptEvent.userChoice.catch === "function") {
         promptEvent.userChoice.catch(() => {});
       }
     } catch (_error) {
-      setInstallControlsHidden(true);
+      updateInstallControls();
     }
   };
 
@@ -401,27 +431,10 @@ const roadmapConfig = {
     const installButtons = qsa("[data-install-app]");
     if (!installButtons.length) return;
 
-    setInstallControlsHidden(true);
-
-    window.addEventListener("beforeinstallprompt", (event) => {
-      event.preventDefault();
-      if (isStandaloneApp()) {
-        deferredInstallPrompt = null;
-        setInstallControlsHidden(true);
-        return;
-      }
-      deferredInstallPrompt = event;
-      setInstallControlsHidden(false);
-    });
-
-    window.addEventListener("appinstalled", () => {
-      deferredInstallPrompt = null;
-      setInstallControlsHidden(true);
-    });
-
     installButtons.forEach((button) => {
       button.addEventListener("click", handleInstallApp);
     });
+    updateInstallControls();
   };
 
   const initServiceWorker = () => {
@@ -449,22 +462,19 @@ const roadmapConfig = {
     const buttons = qsa("[data-roadmap-marker]");
     if (!buttons.length) return;
 
-    const openPanel = (button) => {
-      const targetId = button.getAttribute("aria-controls");
+    const selectMarker = (index) => {
+      selectedRoadmapIndex = Math.max(0, Math.min(roadmapConfig.milestones.length - 1, index));
+      roadmapSelectionTouched = true;
       buttons.forEach((item) => {
-        const panelId = item.getAttribute("aria-controls");
-        const panel = panelId ? document.getElementById(panelId) : null;
-        const isTarget = item === button;
-        item.setAttribute("aria-expanded", String(isTarget));
-        if (panel) {
-          panel.hidden = !isTarget;
-          panel.classList.toggle("is-open", isTarget);
-        }
+        const markerIndex = Number(item.getAttribute("data-roadmap-marker"));
+        item.setAttribute("aria-pressed", String(markerIndex === selectedRoadmapIndex));
       });
+      renderRoadmapDetail(selectedRoadmapIndex);
     };
 
     buttons.forEach((button) => {
-      button.addEventListener("click", () => openPanel(button));
+      const markerIndex = Number(button.getAttribute("data-roadmap-marker"));
+      button.addEventListener("click", () => selectMarker(markerIndex));
       button.addEventListener("keydown", (event) => {
         if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"].includes(event.key)) return;
         event.preventDefault();
@@ -476,9 +486,36 @@ const roadmapConfig = {
           return Math.min(buttons.length - 1, index + 1);
         })();
         buttons[nextIndex].focus();
-        openPanel(buttons[nextIndex]);
+        selectMarker(Number(buttons[nextIndex].getAttribute("data-roadmap-marker")));
       });
     });
+  };
+
+  const getCurrentChapterIndex = (status = telegramStatus) => {
+    if (!status) return 0;
+    if (status.members >= roadmapConfig.chapterTargets[roadmapConfig.chapterTargets.length - 1]) {
+      return roadmapConfig.chapterTargets.length - 1;
+    }
+    return Math.max(0, Math.min(roadmapConfig.chapterTargets.length - 1, status.currentChapter - 1));
+  };
+
+  const getChapterRouteProgress = (index) => {
+    const stops = [0.04, 0.22, 0.39, 0.58, 0.75, 0.96];
+    return stops[Math.max(0, Math.min(stops.length - 1, index))];
+  };
+
+  const renderRoadmapDetail = (index = selectedRoadmapIndex) => {
+    const milestone = roadmapConfig.milestones[index] || roadmapConfig.milestones[0];
+    const detail = qs("[data-roadmap-detail]");
+    if (!detail || !milestone) return;
+    const chapter = qs("[data-roadmap-detail-chapter]", detail);
+    const title = qs("[data-roadmap-detail-title]", detail);
+    const target = qs("[data-roadmap-detail-target]", detail);
+    const description = qs("[data-roadmap-detail-description]", detail);
+    if (chapter) chapter.textContent = `CHAPTER ${milestone.chapter}`;
+    if (title) title.textContent = milestone.title;
+    if (target) target.textContent = `Target: ${formatNumber(milestone.target)} Telegram members`;
+    if (description) description.textContent = milestone.description;
   };
 
   const validateTelegramStatus = (data) => {
@@ -517,7 +554,7 @@ const roadmapConfig = {
     const markers = qsa("[data-roadmap-marker]");
     if (!route || !gator || typeof route.getTotalLength !== "function") return;
 
-    const routeProgress = 0.04 + getChapterProgress(status) * 0.92;
+    const routeProgress = getChapterRouteProgress(getCurrentChapterIndex(status));
     const length = route.getTotalLength();
     const point = route.getPointAtLength(length * routeProgress);
     gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
@@ -530,7 +567,7 @@ const roadmapConfig = {
     if (!route || !gator || typeof route.getTotalLength !== "function") return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const targetProgress = 0.04 + getChapterProgress() * 0.92;
+    const targetProgress = getChapterRouteProgress(getCurrentChapterIndex());
     const length = route.getTotalLength();
     activeRoadmapAnimation += 1;
     const animationId = activeRoadmapAnimation;
@@ -563,10 +600,7 @@ const roadmapConfig = {
 
   const updateRoadmapMarkerStates = (status = telegramStatus, flashCurrent = false) => {
     const markers = qsa("[data-roadmap-marker]");
-    const targets = roadmapConfig.chapterTargets;
-    const activeIndex = status
-      ? (status.members >= targets[targets.length - 1] ? targets.length - 1 : Math.max(0, status.currentChapter - 1))
-      : 0;
+    const activeIndex = getCurrentChapterIndex(status);
 
     markers.forEach((marker, index) => {
       const target = Number(marker.getAttribute("data-target"));
@@ -574,7 +608,9 @@ const roadmapConfig = {
       const active = Boolean(status) && index === activeIndex;
       marker.classList.toggle("is-complete", complete);
       marker.classList.toggle("is-active", active);
+      marker.classList.toggle("is-selected", index === selectedRoadmapIndex);
       marker.classList.toggle("is-locked", Boolean(status) && !complete && !active);
+      marker.setAttribute("aria-pressed", String(index === selectedRoadmapIndex));
       qs("[data-current-label]", marker)?.toggleAttribute("hidden", !active);
       if (flashCurrent && active) {
         marker.classList.remove("is-pulse");
@@ -593,6 +629,7 @@ const roadmapConfig = {
       animateRoadmapSwim();
     });
 
+    renderRoadmapDetail(selectedRoadmapIndex);
     setRoadmapProgress(telegramStatus, { flashCurrent: false });
 
     if (!("IntersectionObserver" in window)) {
@@ -663,15 +700,17 @@ const roadmapConfig = {
     if (message) message.textContent = "Live Telegram signal locked";
     if (live) live.hidden = false;
     if (progress) progress.hidden = false;
+    const chapterIndex = getCurrentChapterIndex(status);
+    const milestone = roadmapConfig.milestones[chapterIndex];
     animateNumber(members, status.members);
-    if (chapter) chapter.textContent = `Chapter ${status.currentChapter}`;
-    if (nextTarget) nextTarget.textContent = `${formatNumber(status.nextTarget)} members`;
-    if (progressText) progressText.textContent = `${formatNumber(status.members)} / ${formatNumber(status.nextTarget)} members`;
+    if (chapter) chapter.textContent = milestone ? `CHAPTER ${milestone.chapter} — ${milestone.title}` : `CHAPTER ${status.currentChapter}`;
+    if (nextTarget) nextTarget.textContent = formatNumber(status.nextTarget);
+    if (progressText) progressText.textContent = `${formatNumber(status.members)} / ${formatNumber(status.nextTarget)}`;
     if (progressPercent) progressPercent.textContent = `${formatNumber(Math.round(status.progressPercent))}%`;
     if (progressFill) progressFill.style.setProperty("--swamp-progress", `${status.progressPercent}%`);
     if (updated) {
       const date = new Date(status.updatedAt);
-      updated.textContent = Number.isNaN(date.getTime()) ? "Last updated just now" : `Last updated ${date.toLocaleString()}`;
+      updated.textContent = Number.isNaN(date.getTime()) ? "Updates automatically" : `Updates automatically · ${date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
     }
   };
 
@@ -685,7 +724,15 @@ const roadmapConfig = {
     }
 
     renderTelegramStatus(telegramStatus);
-    setRoadmapProgress(telegramStatus, { flashCurrent: true });
+    if (telegramStatus && !roadmapSelectionTouched) {
+      selectedRoadmapIndex = getCurrentChapterIndex(telegramStatus);
+      renderRoadmapDetail(selectedRoadmapIndex);
+    }
+    if (roadmapEntranceStarted) {
+      animateRoadmapSwim();
+    } else {
+      setRoadmapProgress(telegramStatus, { flashCurrent: true });
+    }
   };
 
   const validateMarketData = (data) => {
@@ -757,58 +804,29 @@ const roadmapConfig = {
     window.setInterval(fetchMarketData, Math.max(5000, marketDataConfig.refreshIntervalMs));
   };
 
-  const initGatorSound = () => {
-    const button = qs("[data-gator-sound]");
+  const initGatorAction = () => {
+    const button = qs("[data-gator-action]");
     if (!button) return;
+    let lastPlayAt = 0;
 
     button.addEventListener("click", () => {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
+      const now = performance.now();
+      if (now - lastPlayAt < 900) return;
+      lastPlayAt = now;
 
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const context = new AudioContext();
-      const duration = 0.85;
-      const now = context.currentTime;
-      const output = context.createGain();
-      const filter = context.createBiquadFilter();
-      const oscillator = context.createOscillator();
-      const noiseBuffer = context.createBuffer(1, Math.floor(context.sampleRate * duration), context.sampleRate);
-      const noiseData = noiseBuffer.getChannelData(0);
-
-      for (let index = 0; index < noiseData.length; index += 1) {
-        noiseData[index] = (Math.random() * 2 - 1) * (1 - index / noiseData.length);
-      }
-
-      const noise = context.createBufferSource();
-      noise.buffer = noiseBuffer;
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(180, now);
-      filter.frequency.exponentialRampToValueAtTime(70, now + duration);
-      oscillator.type = "sawtooth";
-      oscillator.frequency.setValueAtTime(74, now);
-      oscillator.frequency.exponentialRampToValueAtTime(38, now + duration);
-      output.gain.setValueAtTime(0.0001, now);
-      output.gain.exponentialRampToValueAtTime(0.16, now + 0.04);
-      output.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-      noise.connect(filter);
-      filter.connect(output);
-      oscillator.connect(output);
-      output.connect(context.destination);
-      noise.start(now);
-      oscillator.start(now);
-      noise.stop(now + duration);
-      oscillator.stop(now + duration);
-      window.setTimeout(() => context.close().catch(() => {}), Math.ceil((duration + 0.1) * 1000));
 
       if (!prefersReducedMotion) {
-        button.classList.remove("is-growling");
+        button.classList.remove("is-tapped");
         void button.offsetWidth;
-        button.classList.add("is-growling");
-        window.setTimeout(() => button.classList.remove("is-growling"), 760);
+        button.classList.add("is-tapped");
+        window.setTimeout(() => button.classList.remove("is-tapped"), 760);
       }
     });
   };
+
+  window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  window.addEventListener("appinstalled", handleAppInstalled);
 
   document.addEventListener("DOMContentLoaded", () => {
     applyArtworkConfig();
@@ -824,7 +842,7 @@ const roadmapConfig = {
     initRoadmapSwim();
     initReveal();
     initLightBloom();
-    initGatorSound();
+    initGatorAction();
     initTelegramStatus();
     initMarketFeed();
     initServiceWorker();
