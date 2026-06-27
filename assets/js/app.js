@@ -258,7 +258,12 @@ const roadmapConfig = {
     const toggle = qs("[data-menu-toggle]");
     const panel = qs("[data-nav-panel]");
     if (!toggle || !panel) return;
+    if (toggle.dataset.menuReady === "true") return;
 
+    const controlledId = toggle.getAttribute("aria-controls");
+    if (!controlledId || document.getElementById(controlledId) !== panel) return;
+
+    toggle.dataset.menuReady = "true";
     const close = () => {
       toggle.setAttribute("aria-expanded", "false");
       toggle.setAttribute("aria-label", "Open navigation menu");
@@ -278,8 +283,16 @@ const roadmapConfig = {
       expanded ? close() : open();
     });
 
-    qsa("a, button", panel).forEach((link) => {
+    qsa("a[href], button", panel).forEach((link) => {
       link.addEventListener("click", close);
+    });
+
+    document.addEventListener("click", (event) => {
+      if (toggle.getAttribute("aria-expanded") !== "true") return;
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (toggle.contains(target) || panel.contains(target)) return;
+      close();
     });
 
     document.addEventListener("yapgator:close-menu", close);
@@ -833,23 +846,34 @@ const roadmapConfig = {
   window.addEventListener("appinstalled", handleAppInstalled);
 
   document.addEventListener("DOMContentLoaded", () => {
-    applyArtworkConfig();
-    applyLaunchConfig();
-    initYear();
-    initIntro();
-    initMenu();
-    initOpeningImpact();
-    initFaq();
-    initCopyContract();
-    initInstallApp();
-    renderRoadmapMarkers();
-    initRoadmapMarkers();
-    initRoadmapSwim();
-    initReveal();
-    initLightBloom();
-    initTelegramStatus();
-    initMarketFeed();
-    initServiceWorker();
-    window.requestAnimationFrame(() => setRoadmapProgress(telegramStatus));
+    const safeInit = (init) => {
+      try {
+        init();
+      } catch (error) {
+        console.error("YAPGATOR init failed", error);
+      }
+    };
+
+    [
+      applyArtworkConfig,
+      applyLaunchConfig,
+      initYear,
+      initIntro,
+      initMenu,
+      initOpeningImpact,
+      initFaq,
+      initCopyContract,
+      initInstallApp,
+      renderRoadmapMarkers,
+      initRoadmapMarkers,
+      initRoadmapSwim,
+      initReveal,
+      initLightBloom,
+      initTelegramStatus,
+      initMarketFeed,
+      initServiceWorker
+    ].forEach(safeInit);
+
+    safeInit(() => window.requestAnimationFrame(() => setRoadmapProgress(telegramStatus)));
   });
 })();

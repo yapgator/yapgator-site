@@ -568,13 +568,15 @@ a {
 .menu-toggle {
   display: none;
   position: relative;
-  z-index: 5;
+  z-index: 3000;
   width: 48px;
   height: 48px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius);
   background: rgba(1, 8, 9, 0.82);
   backdrop-filter: blur(8px);
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .top-ticker {
@@ -589,6 +591,11 @@ a {
   overflow: hidden;
   border-block: 1px solid rgba(255, 255, 255, 0.09);
   background: linear-gradient(90deg, rgba(2, 14, 12, 0.98), rgba(4, 26, 20, 0.94), rgba(2, 14, 12, 0.98));
+  pointer-events: none;
+}
+
+.top-ticker,
+.top-ticker * {
   pointer-events: none;
 }
 
@@ -999,7 +1006,6 @@ body.opening-impact .hero-actions .btn-primary {
 }
 
 .install-panel::before,
-.command-center::before,
 .swamp-map::before,
 .community-panel::before {
   content: "";
@@ -1011,7 +1017,6 @@ body.opening-impact .hero-actions .btn-primary {
 }
 
 .install-panel.reveal.is-visible::before,
-.command-center.reveal.is-visible::before,
 .swamp-map.reveal.is-visible::before,
 .community-panel.reveal.is-visible::before {
   animation: panelBeam 1100ms ease-out 180ms both;
@@ -1020,10 +1025,6 @@ body.opening-impact .hero-actions .btn-primary {
 .install-panel.reveal.is-visible .install-cta,
 .command-center.reveal.is-visible .btn-primary {
   animation: buttonEnterPulse 820ms ease-out 420ms both;
-}
-
-.command-center.reveal.is-visible::before {
-  animation: scanPass 1050ms ease-out both;
 }
 
 .install-copy p:not(.eyebrow),
@@ -1054,7 +1055,6 @@ body.opening-impact .hero-actions .btn-primary {
 }
 
 .install-media::after,
-.command-media::after,
 .community-media::after {
   content: "";
   position: absolute;
@@ -1071,7 +1071,6 @@ body.opening-impact .hero-actions .btn-primary {
 }
 
 .install-panel.reveal.is-visible .install-media::after,
-.command-center.reveal.is-visible .command-media::after,
 .community-panel.reveal.is-visible .community-media::after {
   animation: mediaReflectionRipple 1200ms ease-out 260ms both;
 }
@@ -1196,21 +1195,6 @@ body.opening-impact .hero-actions .btn-primary {
   aspect-ratio: 1402 / 1122;
   object-fit: cover;
   object-position: 48% 42%;
-}
-
-.monitor-glow {
-  position: absolute;
-  content: "";
-  inset: auto 0 0;
-  height: 36%;
-  background: repeating-linear-gradient(0deg, rgba(55, 255, 134, 0.16) 0 2px, transparent 2px 9px);
-  mix-blend-mode: screen;
-  opacity: 0.32;
-  transform: translateY(8px);
-}
-
-.command-center.reveal.is-visible .monitor-glow {
-  animation: monitorSweep 1200ms ease-out 260ms both;
 }
 
 .status-grid {
@@ -2022,12 +2006,6 @@ dd {
   100% { opacity: 0.18; transform: translateY(0) scaleX(1); }
 }
 
-@keyframes monitorSweep {
-  0% { opacity: 0; transform: translateY(14px) scaleY(0.82); }
-  48% { opacity: 0.62; transform: translateY(0) scaleY(1.04); }
-  100% { opacity: 0.32; transform: translateY(0) scaleY(1); }
-}
-
 @keyframes buttonEnterPulse {
   0%, 100% { transform: translateY(0) scale(1); }
   48% { transform: translateY(-2px) scale(1.04); box-shadow: 0 0 42px rgba(55, 255, 134, 0.56), 0 0 30px rgba(245, 200, 75, 0.28); }
@@ -2039,13 +2017,18 @@ dd {
 }
 
 @media (max-width: 980px) {
+  .site-header {
+    overflow: visible;
+  }
+
   .menu-toggle {
     position: fixed;
     top: max(5px, env(safe-area-inset-top));
     right: max(12px, env(safe-area-inset-right));
-    z-index: 1002;
+    z-index: 3000;
     display: block;
     background: rgba(1, 8, 9, 0.9);
+    pointer-events: auto;
   }
 
   .nav-panel {
@@ -2053,6 +2036,7 @@ dd {
     top: calc(58px + env(safe-area-inset-top));
     left: 12px;
     right: 12px;
+    z-index: 2990;
     max-height: calc(100vh - 74px);
     overflow-y: auto;
     display: none;
@@ -2408,16 +2392,13 @@ dd {
   .fog-bank,
   .scanlines,
   .water-reflection,
-  .monitor-glow,
-  .global-neon-pulse,
+.global-neon-pulse,
   .global-blue-pool,
   .viewport-edge-light span,
   .viewport-edge-light::after,
   .install-panel::before,
   .install-media::after,
-  .command-center::before,
-  .command-media::after,
-  .swamp-map::before,
+.swamp-map::before,
   .community-panel::before,
   .community-media::after,
   .sweep-heading::after {
