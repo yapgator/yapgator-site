@@ -32,7 +32,7 @@ Current local artwork assignments are centralized in `assets/js/app.js`:
 - `assets/images/yapgator-roadmap.png`: atmospheric layer for the Gator Map.
 - `assets/images/yapgator-market.png`: Launch Command Center artwork.
 - `assets/images/yapgator-community.png`: Community and Official Links artwork.
-- `assets/images/yapgator-new-2.png`: intentionally unassigned and unused. Keep the file, but do not display it.
+- `assets/images/yapgator-install.png`: Install App section artwork, renamed from the previously unused `yapgator-new-2.png`.
 - `assets/images/pump-logomark.svg`: local Pump.fun footer asset when available.
 - `assets/images/favicon.svg`: local Yapgator gator-eye emblem.
 

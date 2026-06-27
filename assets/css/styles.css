@@ -28,6 +28,7 @@ html {
 }
 
 body {
+  position: relative;
   margin: 0;
   min-width: 0;
   overflow-x: hidden;
@@ -37,6 +38,114 @@ body {
     radial-gradient(circle at 18% 10%, rgba(40, 169, 255, 0.16), transparent 34rem),
     radial-gradient(circle at 82% 18%, rgba(55, 255, 134, 0.13), transparent 28rem),
     linear-gradient(180deg, #020303 0%, #03110f 42%, #020504 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(55, 255, 134, 0.22), transparent 34rem),
+    radial-gradient(circle at 16% 46%, rgba(40, 169, 255, 0.16), transparent 28rem),
+    radial-gradient(circle at 86% 72%, rgba(245, 200, 75, 0.12), transparent 26rem);
+}
+
+.global-neon {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(55, 255, 134, 0.2), transparent 30rem),
+    radial-gradient(circle at 18% 78%, rgba(40, 169, 255, 0.16), transparent 24rem),
+    radial-gradient(circle at 86% 38%, rgba(40, 169, 255, 0.13), transparent 26rem);
+}
+
+.global-neon-pulse,
+.global-blue-pool {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(30px);
+}
+
+.global-neon-pulse {
+  left: 50%;
+  top: 30%;
+  width: min(98vw, 960px);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(55, 255, 134, 0.36), rgba(55, 255, 134, 0.18) 38%, transparent 68%);
+  transform: translate(-50%, -50%) scale(0.84);
+  animation: globalGreenPulse 6.8s ease-in-out infinite;
+}
+
+.global-blue-pool {
+  width: min(72vw, 680px);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(40, 169, 255, 0.25), rgba(40, 169, 255, 0.09) 42%, transparent 70%);
+  opacity: 0.78;
+}
+
+.global-blue-one {
+  left: -18%;
+  top: 38%;
+}
+
+.global-blue-two {
+  right: -16%;
+  bottom: 2%;
+}
+
+.viewport-edge-light {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid rgba(245, 200, 75, 0.5);
+  box-shadow: inset 0 0 18px rgba(245, 200, 75, 0.26), inset 0 0 36px rgba(55, 255, 134, 0.08);
+}
+
+.site-header,
+main,
+.site-footer,
+.intro-overlay,
+.install-dialog,
+.skip-link {
+  position: relative;
+}
+
+main,
+.site-footer {
+  z-index: 1;
+}
+
+.viewport-edge-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(55, 255, 134, 0.18);
+}
+
+.viewport-edge-light span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--green), transparent);
+  box-shadow: 0 0 18px rgba(245, 200, 75, 0.72), 0 0 24px rgba(55, 255, 134, 0.28);
+  animation: edgeCircuit 11s linear infinite;
+}
+
+body.opening-impact .global-neon-pulse {
+  animation: openingBloom 1.5s ease-out both, globalGreenPulse 6.8s ease-in-out 1.5s infinite;
+}
+
+body.opening-impact .viewport-edge-light {
+  animation: openingEdge 1.5s ease-out both;
 }
 
 body.menu-open {
@@ -364,27 +473,40 @@ a {
   gap: 0.35rem;
 }
 
-.nav-panel a {
+.nav-panel a,
+.nav-panel button {
   min-height: 42px;
   display: inline-flex;
   align-items: center;
   padding: 0.55rem 0.7rem;
+  border: 0;
   border-radius: var(--radius);
   color: var(--muted);
   font-size: 0.88rem;
   font-weight: 800;
+  font-family: var(--font);
   text-decoration: none;
   white-space: nowrap;
+  background: transparent;
+  cursor: pointer;
 }
 
-.nav-panel a:hover {
+.nav-panel a:hover,
+.nav-panel button:hover {
   color: var(--text);
   background: rgba(255, 255, 255, 0.07);
 }
 
-.nav-panel .nav-action {
+.nav-panel .nav-action,
+.nav-panel .nav-install {
   color: var(--text);
   border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.nav-panel .nav-install {
+  border-color: rgba(55, 255, 134, 0.45);
+  background: linear-gradient(135deg, rgba(55, 255, 134, 0.2), rgba(40, 169, 255, 0.16));
+  box-shadow: 0 0 20px rgba(55, 255, 134, 0.14);
 }
 
 .nav-panel .nav-buy {
@@ -418,7 +540,9 @@ a {
   isolation: isolate;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(2, 5, 4, 0.1), #020504),
+    radial-gradient(circle at 42% 24%, rgba(55, 255, 134, 0.3), transparent 35rem),
+    radial-gradient(circle at 76% 28%, rgba(40, 169, 255, 0.22), transparent 30rem),
+    linear-gradient(180deg, rgba(2, 5, 4, 0.16), rgba(2, 5, 4, 0.82)),
     radial-gradient(circle at 50% 30%, rgba(40, 169, 255, 0.18), transparent 36rem);
 }
 
@@ -472,7 +596,17 @@ a {
   font-size: clamp(3.4rem, 12vw, 8.6rem);
   line-height: 0.82;
   letter-spacing: 0;
-  text-shadow: 0 0 35px rgba(55, 255, 134, 0.28), 0 0 55px rgba(40, 169, 255, 0.2);
+  text-shadow: 0 0 30px rgba(55, 255, 134, 0.58), 0 0 65px rgba(40, 169, 255, 0.34), 0 0 18px rgba(245, 200, 75, 0.28);
+}
+
+body.opening-impact .hero-copy h1 {
+  animation: titleOpeningGlow 1.5s ease-out both;
+}
+
+body.opening-impact .brand .gator-emblem,
+body.opening-impact .hero-visual img,
+body.opening-impact .hero-actions .btn-primary {
+  animation: impactPulse 1.45s ease-out both;
 }
 
 .hero-slogan {
@@ -590,7 +724,9 @@ a {
 .story-section,
 .buy-section {
   background:
-    linear-gradient(180deg, rgba(3, 22, 19, 0.72), rgba(2, 5, 4, 0.94)),
+    radial-gradient(circle at 14% 34%, rgba(55, 255, 134, 0.18), transparent 24rem),
+    radial-gradient(circle at 84% 52%, rgba(40, 169, 255, 0.16), transparent 26rem),
+    linear-gradient(180deg, rgba(3, 22, 19, 0.64), rgba(2, 5, 4, 0.86)),
     repeating-linear-gradient(90deg, rgba(55, 255, 134, 0.04) 0 1px, transparent 1px 64px);
 }
 
@@ -614,6 +750,79 @@ a {
   margin-top: 1rem;
   color: var(--gold);
   font-size: 1.3rem;
+  text-shadow: 0 0 18px rgba(245, 200, 75, 0.3);
+}
+
+.install-section {
+  background:
+    radial-gradient(circle at 34% 40%, rgba(55, 255, 134, 0.28), transparent 28rem),
+    radial-gradient(circle at 78% 48%, rgba(40, 169, 255, 0.22), transparent 26rem),
+    linear-gradient(180deg, rgba(2, 5, 4, 0.74), rgba(4, 18, 17, 0.9));
+}
+
+.install-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 390px);
+  gap: clamp(1rem, 4vw, 2rem);
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(1rem, 4vw, 2rem);
+  border: 1px solid rgba(55, 255, 134, 0.26);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(4, 28, 24, 0.82), rgba(2, 8, 10, 0.88)),
+    repeating-linear-gradient(90deg, rgba(55, 255, 134, 0.04) 0 1px, transparent 1px 46px);
+  box-shadow: 0 0 58px rgba(55, 255, 134, 0.22), 0 0 44px rgba(40, 169, 255, 0.15), inset 0 0 34px rgba(245, 200, 75, 0.05);
+}
+
+.install-panel::before,
+.command-center::before,
+.swamp-map::before,
+.community-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent, rgba(55, 255, 134, 0.1), transparent 58%);
+  transform: translateX(-120%);
+  animation: panelBeam 8s ease-in-out infinite;
+}
+
+.install-copy p:not(.eyebrow),
+.install-note {
+  color: var(--muted);
+  font-size: 1.04rem;
+  line-height: 1.65;
+}
+
+.install-cta {
+  margin-top: 0.8rem;
+  box-shadow: 0 0 34px rgba(55, 255, 134, 0.44), 0 0 26px rgba(245, 200, 75, 0.2);
+}
+
+.install-note {
+  margin-bottom: 0;
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.install-media {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(245, 200, 75, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 0 36px rgba(55, 255, 134, 0.2), 0 0 42px rgba(40, 169, 255, 0.15);
+}
+
+.install-media img {
+  display: block;
+  width: 100%;
+  max-height: 390px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
 }
 
 .value-grid,
@@ -661,8 +870,9 @@ a {
 .command-section,
 .map-section {
   background:
-    radial-gradient(circle at 70% 20%, rgba(40, 169, 255, 0.15), transparent 30rem),
-    linear-gradient(180deg, #020504, #04120f);
+    radial-gradient(circle at 68% 22%, rgba(40, 169, 255, 0.24), transparent 32rem),
+    radial-gradient(circle at 18% 72%, rgba(55, 255, 134, 0.16), transparent 27rem),
+    linear-gradient(180deg, rgba(2, 5, 4, 0.86), rgba(4, 18, 15, 0.88));
 }
 
 .command-center {
@@ -676,6 +886,7 @@ a {
   background:
     linear-gradient(145deg, rgba(3, 27, 27, 0.92), rgba(2, 8, 10, 0.94)),
     repeating-linear-gradient(0deg, rgba(55, 255, 134, 0.035) 0 1px, transparent 1px 26px);
+  box-shadow: 0 0 48px rgba(40, 169, 255, 0.22), 0 0 34px rgba(55, 255, 134, 0.18), inset 0 0 36px rgba(55, 255, 134, 0.06);
 }
 
 [data-light-panel]::after {
@@ -810,6 +1021,23 @@ dd {
   border-radius: 50%;
   color: #00140c;
   background: var(--green);
+  box-shadow: 0 0 24px rgba(55, 255, 134, 0.5), 0 0 18px rgba(40, 169, 255, 0.2);
+}
+
+.steps-grid {
+  position: relative;
+}
+
+.steps-grid::before {
+  content: "";
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 22px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(55, 255, 134, 0.58), rgba(40, 169, 255, 0.5), transparent);
+  box-shadow: 0 0 20px rgba(55, 255, 134, 0.34);
+  pointer-events: none;
 }
 
 .warning-panel {
@@ -886,7 +1114,7 @@ dd {
   stroke-width: 7;
   stroke-linecap: round;
   stroke-dasharray: 16 15;
-  filter: url("#routeBloom");
+  filter: url("#routeBloom") drop-shadow(0 0 14px rgba(55, 255, 134, 0.58));
   animation: routeDash 12s linear infinite;
 }
 
@@ -982,7 +1210,7 @@ dd {
   transform: translateY(-3px);
   border-color: var(--gold);
   background: rgba(5, 31, 27, 0.96);
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34), 0 0 24px rgba(55, 255, 134, 0.2);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34), 0 0 30px rgba(55, 255, 134, 0.38), 0 0 18px rgba(245, 200, 75, 0.26);
 }
 
 .map-marker.is-complete {
@@ -1025,9 +1253,10 @@ dd {
 .community-section {
   overflow: hidden;
   background:
-    radial-gradient(circle at 15% 20%, rgba(55, 255, 134, 0.13), transparent 28rem),
-    radial-gradient(circle at 90% 40%, rgba(245, 200, 75, 0.12), transparent 22rem),
-    #020504;
+    radial-gradient(circle at 15% 20%, rgba(55, 255, 134, 0.24), transparent 28rem),
+    radial-gradient(circle at 90% 40%, rgba(245, 200, 75, 0.18), transparent 22rem),
+    radial-gradient(circle at 52% 78%, rgba(40, 169, 255, 0.2), transparent 26rem),
+    rgba(2, 5, 4, 0.88);
 }
 
 .community-panel {
@@ -1108,11 +1337,82 @@ dd {
   padding: 0 1rem 1rem;
 }
 
+.faq-item:has(button[aria-expanded="true"]) {
+  border-color: rgba(55, 255, 134, 0.36);
+  box-shadow: 0 0 32px rgba(55, 255, 134, 0.18), 0 0 26px rgba(40, 169, 255, 0.12);
+}
+
+.faq-item button {
+  background-image: linear-gradient(90deg, rgba(55, 255, 134, 0.34), rgba(40, 169, 255, 0.28));
+  background-size: 0 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 220ms ease;
+}
+
+.faq-item button[aria-expanded="true"] {
+  background-size: 100% 2px;
+}
+
+.install-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 2400;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.install-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 6, 6, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.install-dialog-panel {
+  position: relative;
+  width: min(460px, 100%);
+  padding: 1.4rem;
+  border: 1px solid rgba(55, 255, 134, 0.36);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(55, 255, 134, 0.18), transparent 14rem),
+    linear-gradient(145deg, rgba(3, 24, 21, 0.96), rgba(1, 8, 9, 0.98));
+  box-shadow: 0 0 46px rgba(55, 255, 134, 0.22), 0 0 34px rgba(40, 169, 255, 0.14);
+}
+
+.install-dialog-panel h2 {
+  margin: 0 0 0.7rem;
+}
+
+.install-dialog-panel p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.install-dialog-close {
+  position: absolute;
+  right: 0.8rem;
+  top: 0.8rem;
+  min-height: 40px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(245, 200, 75, 0.32);
+  border-radius: var(--radius);
+  color: var(--text);
+  background: rgba(245, 200, 75, 0.1);
+  font: 900 0.78rem/1 var(--font);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 .site-footer {
   padding: 3rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    radial-gradient(circle at 50% 0, rgba(55, 255, 134, 0.12), transparent 26rem),
+    radial-gradient(circle at 50% 0, rgba(55, 255, 134, 0.26), transparent 28rem),
+    radial-gradient(circle at 78% 30%, rgba(40, 169, 255, 0.2), transparent 24rem),
+    linear-gradient(180deg, rgba(1, 3, 3, 0.82), rgba(1, 3, 3, 0.95)),
     #010303;
 }
 
@@ -1170,6 +1470,7 @@ dd {
 .dock-icon:hover {
   transform: translateY(-4px);
   border-color: var(--gold);
+  box-shadow: 0 0 32px rgba(55, 255, 134, 0.32), 0 0 20px rgba(245, 200, 75, 0.2);
 }
 
 .dock-inactive {
@@ -1275,6 +1576,50 @@ dd {
   to { background-position: 0 64px; }
 }
 
+@keyframes globalGreenPulse {
+  0%, 100% { opacity: 0.48; transform: translate(-50%, -50%) scale(0.86); }
+  50% { opacity: 0.92; transform: translate(-50%, -50%) scale(1.12); }
+}
+
+@keyframes edgeCircuit {
+  0% { left: -34%; top: 0; width: 34%; height: 3px; transform: none; }
+  24% { left: 100%; top: 0; width: 34%; height: 3px; transform: none; }
+  25% { left: calc(100% - 3px); top: -34%; width: 3px; height: 34%; transform: none; }
+  49% { left: calc(100% - 3px); top: 100%; width: 3px; height: 34%; transform: none; }
+  50% { left: 100%; top: calc(100% - 3px); width: 34%; height: 3px; transform: rotate(180deg); }
+  74% { left: -34%; top: calc(100% - 3px); width: 34%; height: 3px; transform: rotate(180deg); }
+  75% { left: 0; top: 100%; width: 3px; height: 34%; transform: rotate(180deg); }
+  99% { left: 0; top: -34%; width: 3px; height: 34%; transform: rotate(180deg); }
+  100% { left: -34%; top: 0; width: 34%; height: 3px; transform: none; }
+}
+
+@keyframes openingBloom {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
+  62% { opacity: 1; transform: translate(-50%, -50%) scale(1.18); }
+  100% { opacity: 0.56; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+@keyframes openingEdge {
+  0%, 100% { box-shadow: inset 0 0 18px rgba(245, 200, 75, 0.26), inset 0 0 36px rgba(55, 255, 134, 0.08); }
+  45% { box-shadow: inset 0 0 34px rgba(245, 200, 75, 0.7), inset 0 0 56px rgba(55, 255, 134, 0.28); }
+}
+
+@keyframes titleOpeningGlow {
+  0% { text-shadow: 0 0 16px rgba(55, 255, 134, 0.24); }
+  45% { text-shadow: 0 0 46px rgba(55, 255, 134, 0.9), 0 0 80px rgba(40, 169, 255, 0.42), 0 0 30px rgba(245, 200, 75, 0.4); }
+  100% { text-shadow: 0 0 30px rgba(55, 255, 134, 0.58), 0 0 65px rgba(40, 169, 255, 0.34), 0 0 18px rgba(245, 200, 75, 0.28); }
+}
+
+@keyframes impactPulse {
+  0%, 100% { box-shadow: inherit; }
+  50% { box-shadow: 0 0 52px rgba(55, 255, 134, 0.62), 0 0 34px rgba(245, 200, 75, 0.3); }
+}
+
+@keyframes panelBeam {
+  0%, 42%, 100% { transform: translateX(-120%); }
+  64% { transform: translateX(120%); }
+}
+
 @media (max-width: 980px) {
   .menu-toggle {
     display: block;
@@ -1301,7 +1646,8 @@ dd {
     display: flex;
   }
 
-  .nav-panel a {
+  .nav-panel a,
+  .nav-panel button {
     width: 100%;
     justify-content: center;
     min-height: 48px;
@@ -1309,6 +1655,7 @@ dd {
 
   .hero-grid,
   .story-layout,
+  .install-panel,
   .command-center,
   .community-panel,
   .footer-grid {
@@ -1329,7 +1676,8 @@ dd {
   }
 
   .command-media img,
-  .community-media img {
+  .community-media img,
+  .install-media img {
     max-height: 430px;
   }
 
@@ -1391,9 +1739,29 @@ dd {
   }
 
   .command-media img,
-  .community-media img {
+  .community-media img,
+  .install-media img {
     max-height: 320px;
     object-position: 50% 38%;
+  }
+
+  .global-neon-pulse {
+    width: 135vw;
+    filter: blur(18px);
+  }
+
+  .global-blue-pool {
+    width: 92vw;
+    filter: blur(20px);
+  }
+
+  .viewport-edge-light {
+    border-width: 1px;
+    box-shadow: inset 0 0 12px rgba(245, 200, 75, 0.3), inset 0 0 24px rgba(55, 255, 134, 0.1);
+  }
+
+  .steps-grid::before {
+    display: none;
   }
 
   .swamp-map {
@@ -1496,9 +1864,34 @@ dd {
   .fog-bank,
   .scanlines,
   .water-reflection,
-  .monitor-glow {
+  .monitor-glow,
+  .global-neon-pulse,
+  .global-blue-pool,
+  .viewport-edge-light span,
+  .install-panel::before,
+  .command-center::before,
+  .swamp-map::before,
+  .community-panel::before,
+  .sweep-heading::after {
     animation: none !important;
     transform: none !important;
+  }
+
+  .global-neon {
+    background:
+      radial-gradient(circle at 50% 22%, rgba(55, 255, 134, 0.34), transparent 34rem),
+      radial-gradient(circle at 18% 78%, rgba(40, 169, 255, 0.22), transparent 24rem),
+      radial-gradient(circle at 86% 38%, rgba(40, 169, 255, 0.16), transparent 26rem);
+  }
+
+  .global-neon-pulse {
+    opacity: 0.72;
+    transform: translate(-50%, -50%) scale(1) !important;
+  }
+
+  .viewport-edge-light {
+    border-color: rgba(245, 200, 75, 0.58);
+    box-shadow: inset 0 0 18px rgba(245, 200, 75, 0.32), inset 0 0 36px rgba(55, 255, 134, 0.12);
   }
 
   .js .reveal,

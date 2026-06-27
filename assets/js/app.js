@@ -21,7 +21,7 @@ const artworkConfig = {
   roadmap: "assets/images/yapgator-roadmap.png",
   market: "assets/images/yapgator-market.png",
   community: "assets/images/yapgator-community.png",
-  unused: "assets/images/yapgator-new-2.png"
+  install: "assets/images/yapgator-install.png"
 };
 
 const marketDataConfig = {
@@ -75,6 +75,8 @@ const roadmapConfig = {
   const hasValue = (value) => typeof value === "string" && value.trim().length > 0;
   const safeText = (value, fallback = "") => (hasValue(value) ? value.trim() : fallback);
   const isFiniteNumber = (value) => typeof value === "number" && Number.isFinite(value);
+  let deferredInstallPrompt = null;
+  let installReturnFocus = null;
 
   const setHidden = (node, hidden) => {
     if (!node) return;
@@ -266,9 +268,11 @@ const roadmapConfig = {
       expanded ? close() : open();
     });
 
-    qsa("a", panel).forEach((link) => {
+    qsa("a, button", panel).forEach((link) => {
       link.addEventListener("click", close);
     });
+
+    document.addEventListener("yapgator:close-menu", close);
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") close();
@@ -350,6 +354,115 @@ const roadmapConfig = {
         panel.style.setProperty("--my", `${event.clientY - rect.top}px`);
       });
     });
+  };
+
+  const isStandaloneApp = () => {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  };
+
+  const setInstallControlsHidden = (hidden) => {
+    qsa("[data-install-app]").forEach((button) => {
+      button.hidden = hidden;
+    });
+  };
+
+  const closeInstallDialog = () => {
+    const dialog = qs("[data-install-dialog]");
+    if (!dialog) return;
+    dialog.hidden = true;
+    document.removeEventListener("keydown", onInstallDialogKeydown);
+    if (installReturnFocus && typeof installReturnFocus.focus === "function") {
+      installReturnFocus.focus();
+    }
+    installReturnFocus = null;
+  };
+
+  function onInstallDialogKeydown(event) {
+    if (event.key === "Escape") closeInstallDialog();
+  }
+
+  const openInstallDialog = (trigger) => {
+    const dialog = qs("[data-install-dialog]");
+    const copy = qs("[data-install-dialog-copy]", dialog || document);
+    const closeButton = qs("[data-install-dialog-close]", dialog || document);
+    if (!dialog || !copy) return;
+
+    installReturnFocus = trigger;
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    copy.textContent = isIos
+      ? "Open this page in Safari, tap Share, then choose \u201cAdd to Home Screen.\u201d"
+      : "Open your browser menu and choose \u201cInstall app\u201d or \u201cAdd to Home screen.\u201d";
+    dialog.hidden = false;
+    closeButton?.focus();
+    document.addEventListener("keydown", onInstallDialogKeydown);
+  };
+
+  const handleInstallApp = async (event) => {
+    const trigger = event.currentTarget;
+    document.dispatchEvent(new CustomEvent("yapgator:close-menu"));
+
+    if (isStandaloneApp()) {
+      setInstallControlsHidden(true);
+      return;
+    }
+
+    if (!deferredInstallPrompt) {
+      openInstallDialog(trigger);
+      return;
+    }
+
+    const promptEvent = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    try {
+      promptEvent.prompt();
+      await promptEvent.userChoice;
+    } catch (_error) {
+      openInstallDialog(trigger);
+    }
+  };
+
+  const initInstallApp = () => {
+    const installButtons = qsa("[data-install-app]");
+    if (!installButtons.length) return;
+
+    if (isStandaloneApp()) {
+      setInstallControlsHidden(true);
+    }
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      if (!isStandaloneApp()) setInstallControlsHidden(false);
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      setInstallControlsHidden(true);
+      closeInstallDialog();
+    });
+
+    installButtons.forEach((button) => {
+      button.addEventListener("click", handleInstallApp);
+    });
+
+    qsa("[data-install-dialog-close]").forEach((button) => {
+      button.addEventListener("click", closeInstallDialog);
+    });
+  };
+
+  const initServiceWorker = () => {
+    if (!("serviceWorker" in navigator)) return;
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  };
+
+  const initOpeningImpact = () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.body.classList.add("opening-impact");
+    window.setTimeout(() => {
+      document.body.classList.remove("opening-impact");
+    }, 1700);
   };
 
   const initYear = () => {
@@ -505,12 +618,15 @@ const roadmapConfig = {
     initYear();
     initIntro();
     initMenu();
+    initOpeningImpact();
     initFaq();
     initCopyContract();
+    initInstallApp();
     initRoadmapMarkers();
     initReveal();
     initLightBloom();
     initMarketFeed();
+    initServiceWorker();
     window.requestAnimationFrame(() => setRoadmapProgress(roadmapConfig.currentMarketCap));
   });
 })();
