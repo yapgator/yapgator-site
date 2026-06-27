@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="YAPGATOR Y coin">
+  <defs>
+    <radialGradient id="gold" cx="35%" cy="25%" r="75%">
+      <stop offset="0" stop-color="#fff7bd"/>
+      <stop offset="0.48" stop-color="#f5c84b"/>
+      <stop offset="1" stop-color="#91650a"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="128" height="128" rx="24" fill="#02120f"/>
+  <circle cx="64" cy="64" r="48" fill="url(#gold)" filter="url(#glow)"/>
+  <circle cx="64" cy="64" r="39" fill="none" stroke="#1b1200" stroke-width="5" opacity="0.5"/>
+  <path d="M35 35h18l12 20 12-20h18L73 70v25H57V70L35 35Z" fill="#06110d"/>
+</svg>
