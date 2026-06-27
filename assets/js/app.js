@@ -33,6 +33,7 @@ const marketDataConfig = {
 
 const roadmapConfig = {
   currentMarketCap: null,
+  chapterTargets: [50, 100, 250, 500, 1000, 1500],
   milestones: [
     {
       targetMarketCap: "",
@@ -76,6 +77,9 @@ const roadmapConfig = {
   const safeText = (value, fallback = "") => (hasValue(value) ? value.trim() : fallback);
   const isFiniteNumber = (value) => typeof value === "number" && Number.isFinite(value);
   let deferredInstallPrompt = null;
+  let telegramStatus = null;
+  let roadmapEntranceStarted = false;
+  let activeRoadmapAnimation = 0;
 
   const setHidden = (node, hidden) => {
     if (!node) return;
@@ -452,10 +456,11 @@ const roadmapConfig = {
         const panel = panelId ? document.getElementById(panelId) : null;
         const isTarget = item === button;
         item.setAttribute("aria-expanded", String(isTarget));
-        if (panel) panel.hidden = !isTarget;
+        if (panel) {
+          panel.hidden = !isTarget;
+          panel.classList.toggle("is-open", isTarget);
+        }
       });
-      const targetPanel = targetId ? document.getElementById(targetId) : null;
-      targetPanel?.classList.add("is-open");
     };
 
     buttons.forEach((button) => {
@@ -476,36 +481,211 @@ const roadmapConfig = {
     });
   };
 
-  const setRoadmapProgress = (marketCap) => {
+  const validateTelegramStatus = (data) => {
+    if (!data || typeof data !== "object") return null;
+    const members = Number(data.members);
+    const currentChapter = Number(data.currentChapter);
+    const currentTarget = Number(data.currentTarget);
+    const nextTarget = Number(data.nextTarget);
+    const progressPercent = Number(data.progressPercent);
+    const updatedAt = hasValue(data.updatedAt) ? data.updatedAt.trim() : "";
+
+    if (!Number.isInteger(members) || members < 0) return null;
+    if (!Number.isInteger(currentChapter) || currentChapter < 0 || currentChapter > roadmapConfig.chapterTargets.length) return null;
+    if (!Number.isFinite(currentTarget) || currentTarget < 0) return null;
+    if (!Number.isFinite(nextTarget) || nextTarget <= 0) return null;
+    if (!Number.isFinite(progressPercent) || progressPercent < 0 || progressPercent > 100) return null;
+
+    return { members, currentChapter, currentTarget, nextTarget, progressPercent, updatedAt };
+  };
+
+  const getChapterProgress = (status = telegramStatus) => {
+    const targets = roadmapConfig.chapterTargets;
+    if (!status) return 0;
+    if (status.members >= targets[targets.length - 1]) return 1;
+
+    const activeIndex = Math.max(0, Math.min(targets.length - 1, status.currentChapter - 1));
+    const lowerTarget = activeIndex === 0 ? 0 : targets[activeIndex - 1];
+    const upperTarget = targets[activeIndex];
+    const segmentProgress = Math.max(0, Math.min(1, (status.members - lowerTarget) / Math.max(upperTarget - lowerTarget, 1)));
+    return Math.max(0, Math.min(1, (activeIndex + segmentProgress) / targets.length));
+  };
+
+  const setRoadmapProgress = (status = telegramStatus, options = {}) => {
     const route = qs("[data-route-path]");
     const gator = qs("[data-route-gator]");
     const markers = qsa("[data-roadmap-marker]");
     if (!route || !gator || typeof route.getTotalLength !== "function") return;
 
-    const targets = roadmapConfig.milestones
-      .map((milestone) => parseMarketCap(milestone.targetMarketCap))
-      .filter((value) => value !== null)
-      .sort((a, b) => a - b);
+    const routeProgress = 0.04 + getChapterProgress(status) * 0.92;
+    const length = route.getTotalLength();
+    const point = route.getPointAtLength(length * routeProgress);
+    gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
+    updateRoadmapMarkerStates(status, options.flashCurrent === true);
+  };
 
-    let progress = 0.04;
-    if (isFiniteNumber(marketCap) && targets.length) {
-      const highestTarget = targets[targets.length - 1];
-      const achieved = targets.filter((target) => marketCap >= target).length;
-      const nextTarget = targets[achieved] ?? highestTarget;
-      const previousTarget = targets[achieved - 1] ?? 0;
-      const segmentRange = Math.max(nextTarget - previousTarget, 1);
-      const segmentProgress = Math.max(0, Math.min(1, (marketCap - previousTarget) / segmentRange));
-      progress = Math.min(0.96, ((achieved + segmentProgress) / targets.length) * 0.92 + 0.04);
+  const animateRoadmapSwim = () => {
+    const route = qs("[data-route-path]");
+    const gator = qs("[data-route-gator]");
+    if (!route || !gator || typeof route.getTotalLength !== "function") return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const targetProgress = 0.04 + getChapterProgress() * 0.92;
+    const length = route.getTotalLength();
+    activeRoadmapAnimation += 1;
+    const animationId = activeRoadmapAnimation;
+
+    if (prefersReducedMotion) {
+      setRoadmapProgress(telegramStatus, { flashCurrent: false });
+      return;
     }
 
-    const length = route.getTotalLength();
-    const point = route.getPointAtLength(length * progress);
-    gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
+    const duration = 1900;
+    const start = performance.now();
+    const ease = (value) => 1 - Math.pow(1 - value, 3);
+
+    const frame = (now) => {
+      if (animationId !== activeRoadmapAnimation) return;
+      const elapsed = Math.min(1, (now - start) / duration);
+      const progress = 0.04 + (targetProgress - 0.04) * ease(elapsed);
+      const point = route.getPointAtLength(length * progress);
+      gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
+
+      if (elapsed < 1) {
+        window.requestAnimationFrame(frame);
+        return;
+      }
+      updateRoadmapMarkerStates(telegramStatus, true);
+    };
+
+    window.requestAnimationFrame(frame);
+  };
+
+  const updateRoadmapMarkerStates = (status = telegramStatus, flashCurrent = false) => {
+    const markers = qsa("[data-roadmap-marker]");
+    const targets = roadmapConfig.chapterTargets;
+    const activeIndex = status
+      ? (status.members >= targets[targets.length - 1] ? targets.length - 1 : Math.max(0, status.currentChapter - 1))
+      : 0;
 
     markers.forEach((marker, index) => {
-      const target = parseMarketCap(roadmapConfig.milestones[index]?.targetMarketCap);
-      marker.classList.toggle("is-complete", target !== null && isFiniteNumber(marketCap) && marketCap >= target);
+      const target = Number(marker.getAttribute("data-target"));
+      const complete = Boolean(status && Number.isFinite(target) && status.members >= target);
+      const active = Boolean(status) && index === activeIndex;
+      marker.classList.toggle("is-complete", complete);
+      marker.classList.toggle("is-active", active);
+      marker.classList.toggle("is-locked", Boolean(status) && !complete && !active);
+      qs("[data-current-label]", marker)?.toggleAttribute("hidden", !active);
+      if (flashCurrent && active) {
+        marker.classList.remove("is-pulse");
+        void marker.offsetWidth;
+        marker.classList.add("is-pulse");
+      }
     });
+  };
+
+  const initRoadmapSwim = () => {
+    const roadmap = qs("[data-roadmap]");
+    const replay = qs("[data-replay-swim]");
+    if (!roadmap) return;
+
+    replay?.addEventListener("click", () => {
+      animateRoadmapSwim();
+    });
+
+    setRoadmapProgress(telegramStatus, { flashCurrent: false });
+
+    if (!("IntersectionObserver" in window)) {
+      roadmapEntranceStarted = true;
+      animateRoadmapSwim();
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting || roadmapEntranceStarted) return;
+        roadmapEntranceStarted = true;
+        animateRoadmapSwim();
+        observer.unobserve(roadmap);
+      });
+    }, { threshold: 0.28 });
+
+    observer.observe(roadmap);
+  };
+
+  const animateNumber = (node, nextValue) => {
+    if (!node) return;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const formatter = new Intl.NumberFormat("en-US");
+    if (prefersReducedMotion) {
+      node.textContent = formatter.format(nextValue);
+      return;
+    }
+
+    const previous = Number(node.dataset.value || "0");
+    const start = performance.now();
+    const duration = 720;
+    const step = (now) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(previous + (nextValue - previous) * eased);
+      node.textContent = formatter.format(value);
+      if (progress < 1) window.requestAnimationFrame(step);
+    };
+    node.dataset.value = String(nextValue);
+    window.requestAnimationFrame(step);
+  };
+
+  const renderTelegramStatus = (status) => {
+    const root = qs("[data-swamp-status]");
+    if (!root) return;
+    const live = qs("[data-swamp-status-live]", root);
+    const progress = qs("[data-swamp-progress]", root);
+    const message = qs("[data-swamp-status-message]", root);
+    const members = qs("[data-swamp-members]", root);
+    const chapter = qs("[data-swamp-chapter]", root);
+    const nextTarget = qs("[data-swamp-next-target]", root);
+    const progressText = qs("[data-swamp-progress-text]", root);
+    const progressPercent = qs("[data-swamp-progress-percent]", root);
+    const progressFill = qs("[data-swamp-progress-fill]", root);
+    const updated = qs("[data-swamp-updated]", root);
+
+    if (!status) {
+      root.classList.remove("is-live");
+      if (message) message.textContent = "Swamp signal updating";
+      if (live) live.hidden = true;
+      if (progress) progress.hidden = true;
+      if (updated) updated.textContent = "";
+      return;
+    }
+
+    root.classList.add("is-live");
+    if (message) message.textContent = "Live Telegram signal locked";
+    if (live) live.hidden = false;
+    if (progress) progress.hidden = false;
+    animateNumber(members, status.members);
+    if (chapter) chapter.textContent = `Chapter ${status.currentChapter}`;
+    if (nextTarget) nextTarget.textContent = `${formatNumber(status.nextTarget)} members`;
+    if (progressText) progressText.textContent = `${formatNumber(status.members)} / ${formatNumber(status.nextTarget)} members`;
+    if (progressPercent) progressPercent.textContent = `${formatNumber(Math.round(status.progressPercent))}%`;
+    if (progressFill) progressFill.style.setProperty("--swamp-progress", `${status.progressPercent}%`);
+    if (updated) {
+      const date = new Date(status.updatedAt);
+      updated.textContent = Number.isNaN(date.getTime()) ? "Last updated just now" : `Last updated ${date.toLocaleString()}`;
+    }
+  };
+
+  const initTelegramStatus = async () => {
+    try {
+      const response = await fetch(`data/telegram-status.json?t=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error("status fetch failed");
+      telegramStatus = validateTelegramStatus(await response.json());
+    } catch (_error) {
+      telegramStatus = null;
+    }
+
+    renderTelegramStatus(telegramStatus);
+    setRoadmapProgress(telegramStatus, { flashCurrent: true });
   };
 
   const validateMarketData = (data) => {
@@ -546,11 +726,6 @@ const roadmapConfig = {
       updatedNode.textContent = Number.isNaN(date.getTime()) ? values.lastUpdated : date.toLocaleString();
     }
 
-    if (values.marketCap !== null) {
-      roadmapConfig.currentMarketCap = values.marketCap;
-      setRoadmapProgress(values.marketCap);
-    }
-
     feed.hidden = false;
     return true;
   };
@@ -582,6 +757,59 @@ const roadmapConfig = {
     window.setInterval(fetchMarketData, Math.max(5000, marketDataConfig.refreshIntervalMs));
   };
 
+  const initGatorSound = () => {
+    const button = qs("[data-gator-sound]");
+    if (!button) return;
+
+    button.addEventListener("click", () => {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const context = new AudioContext();
+      const duration = 0.85;
+      const now = context.currentTime;
+      const output = context.createGain();
+      const filter = context.createBiquadFilter();
+      const oscillator = context.createOscillator();
+      const noiseBuffer = context.createBuffer(1, Math.floor(context.sampleRate * duration), context.sampleRate);
+      const noiseData = noiseBuffer.getChannelData(0);
+
+      for (let index = 0; index < noiseData.length; index += 1) {
+        noiseData[index] = (Math.random() * 2 - 1) * (1 - index / noiseData.length);
+      }
+
+      const noise = context.createBufferSource();
+      noise.buffer = noiseBuffer;
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(180, now);
+      filter.frequency.exponentialRampToValueAtTime(70, now + duration);
+      oscillator.type = "sawtooth";
+      oscillator.frequency.setValueAtTime(74, now);
+      oscillator.frequency.exponentialRampToValueAtTime(38, now + duration);
+      output.gain.setValueAtTime(0.0001, now);
+      output.gain.exponentialRampToValueAtTime(0.16, now + 0.04);
+      output.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      noise.connect(filter);
+      filter.connect(output);
+      oscillator.connect(output);
+      output.connect(context.destination);
+      noise.start(now);
+      oscillator.start(now);
+      noise.stop(now + duration);
+      oscillator.stop(now + duration);
+      window.setTimeout(() => context.close().catch(() => {}), Math.ceil((duration + 0.1) * 1000));
+
+      if (!prefersReducedMotion) {
+        button.classList.remove("is-growling");
+        void button.offsetWidth;
+        button.classList.add("is-growling");
+        window.setTimeout(() => button.classList.remove("is-growling"), 760);
+      }
+    });
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
     applyArtworkConfig();
     applyLaunchConfig();
@@ -593,10 +821,13 @@ const roadmapConfig = {
     initCopyContract();
     initInstallApp();
     initRoadmapMarkers();
+    initRoadmapSwim();
     initReveal();
     initLightBloom();
+    initGatorSound();
+    initTelegramStatus();
     initMarketFeed();
     initServiceWorker();
-    window.requestAnimationFrame(() => setRoadmapProgress(roadmapConfig.currentMarketCap));
+    window.requestAnimationFrame(() => setRoadmapProgress(telegramStatus));
   });
 })();
