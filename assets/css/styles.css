@@ -421,7 +421,7 @@ a {
   box-shadow: var(--shadow), inset 0 0 40px rgba(55, 255, 134, 0.08);
 }
 
-.gator-emblem {
+.intro-character-frame {
   display: inline-grid;
   place-items: center;
   width: 40px;
@@ -432,20 +432,23 @@ a {
   box-shadow: 0 0 18px rgba(55, 255, 134, 0.2), 0 0 14px rgba(40, 169, 255, 0.16);
 }
 
-.gator-emblem svg {
-  width: 34px;
-  height: 34px;
-}
-
-.gator-emblem-large {
-  width: 72px;
-  height: 72px;
+.intro-character-frame {
+  width: 96px;
+  height: 96px;
   margin-inline: auto;
+  overflow: hidden;
+  border: 2px solid rgba(245, 200, 75, 0.58);
+  border-radius: 18px;
+  background: #041411;
+  box-shadow: 0 0 34px rgba(55, 255, 134, 0.32), 0 0 24px rgba(40, 169, 255, 0.18), inset 0 0 0 3px rgba(3, 26, 20, 0.92);
 }
 
-.gator-emblem-large svg {
-  width: 62px;
-  height: 62px;
+.intro-character-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .intro-card h2 {
@@ -457,6 +460,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 1000;
+  overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(1, 8, 9, 0.78);
   backdrop-filter: blur(10px);
@@ -474,6 +478,8 @@ a {
 }
 
 .nav {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -554,21 +560,27 @@ a {
 .menu-toggle {
   display: none;
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 48px;
   height: 48px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(1, 8, 9, 0.82);
+  backdrop-filter: blur(8px);
 }
 
 .top-ticker {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
   width: 100%;
+  min-width: 0;
   overflow: hidden;
   border-block: 1px solid rgba(255, 255, 255, 0.09);
   background: linear-gradient(90deg, rgba(2, 14, 12, 0.98), rgba(4, 26, 20, 0.94), rgba(2, 14, 12, 0.98));
+  pointer-events: none;
 }
 
 .menu-toggle span {
@@ -783,17 +795,6 @@ body.opening-impact .hero-actions .btn-primary {
   line-height: 1;
 }
 
-.swamp-status-message,
-.swamp-status-updated {
-  margin: 0.45rem 0 0;
-  color: var(--muted);
-}
-
-.swamp-status.is-live .swamp-status-message {
-  color: var(--green);
-  font-weight: 900;
-}
-
 .swamp-status-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -809,9 +810,17 @@ body.opening-impact .hero-actions .btn-primary {
   background: rgba(0, 0, 0, 0.22);
 }
 
+.swamp-status-stats dt {
+  min-width: 0;
+}
+
 .swamp-status-stats dd {
   font-size: clamp(0.95rem, 2vw, 1.45rem);
   line-height: 1.12;
+  min-width: 0;
+  writing-mode: horizontal-tb;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .swamp-progress {
@@ -853,81 +862,30 @@ body.opening-impact .hero-actions .btn-primary {
   gap: 0.75rem;
 }
 
-.status-gator-control {
-  display: grid;
-  justify-items: center;
-  gap: 0.3rem;
-  flex: 0 0 auto;
-}
-
-.status-gator-control > span {
-  color: var(--gold);
-  font-size: 0.68rem;
-  font-weight: 1000;
-  line-height: 1;
-  text-align: center;
-}
-
 .status-gator {
   position: relative;
-  display: grid;
-  place-items: center;
   width: 68px;
   height: 68px;
   flex: 0 0 auto;
   overflow: hidden;
   border: 2px solid rgba(245, 200, 75, 0.68);
   border-radius: 12px;
-  color: var(--text);
   background: #041411;
   box-shadow: 0 0 20px rgba(55, 255, 134, 0.2), inset 0 0 0 2px rgba(3, 26, 20, 0.92);
-  cursor: pointer;
-  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-}
-
-.status-gator img {
   display: block;
-  width: 100%;
-  height: 100%;
   object-fit: cover;
   object-position: center;
-}
-
-.status-gator:hover,
-.status-gator:focus-visible {
-  transform: translateY(-2px);
-  border-color: var(--gold);
-  box-shadow: 0 0 28px rgba(55, 255, 134, 0.36), 0 0 18px rgba(245, 200, 75, 0.2);
-}
-
-.status-gator.is-tapped {
-  animation: gatorTap 520ms ease-out, gatorOutlinePulse 620ms ease-out;
-}
-
-.status-gator.is-tapped .status-gator-ripple {
-  animation: statusRipple 720ms ease-out;
-}
-
-.status-gator-ripple {
-  position: absolute;
-  inset: 50%;
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(40, 169, 255, 0.72);
-  border-radius: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.2);
 }
 
 .ticker-track {
   display: flex;
   width: max-content;
   gap: 1.2rem;
-  padding: 0.55rem 0;
+  padding: 0.55rem max(86px, env(safe-area-inset-right)) 0.55rem max(18px, env(safe-area-inset-left));
   color: var(--text);
   font-weight: 1000;
   font-size: 0.82rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
   white-space: nowrap;
   animation: tickerMove 26s linear infinite;
@@ -1401,6 +1359,10 @@ dd {
   filter: drop-shadow(0 0 13px rgba(55, 255, 134, 0.55));
   transition: transform 700ms ease;
   animation: gatorFloat 3.4s ease-in-out infinite alternate;
+}
+
+.route-gator-image {
+  filter: drop-shadow(0 0 10px rgba(55, 255, 134, 0.58)) drop-shadow(0 0 8px rgba(40, 169, 255, 0.34));
 }
 
 .gator-ripple {
@@ -1894,30 +1856,18 @@ dd {
   45% { box-shadow: 0 0 28px rgba(245, 200, 75, 0.7), 0 0 28px rgba(55, 255, 134, 0.42); }
 }
 
-@keyframes gatorTap {
-  0%, 100% { transform: scale(1); }
-  42% { transform: scale(1.08); }
-  72% { transform: scale(0.98); }
-}
-
-@keyframes statusRipple {
-  0% { opacity: 0.72; transform: translate(-50%, -50%) scale(0.2); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(7.5); }
-}
-
-@keyframes gatorOutlinePulse {
-  0%, 100% { border-color: rgba(245, 200, 75, 0.68); box-shadow: 0 0 20px rgba(55, 255, 134, 0.2), inset 0 0 0 2px rgba(3, 26, 20, 0.92); }
-  45% { border-color: rgba(255, 235, 139, 0.98); box-shadow: 0 0 28px rgba(245, 200, 75, 0.48), 0 0 22px rgba(55, 255, 134, 0.32), inset 0 0 0 2px rgba(3, 26, 20, 0.92); }
-}
-
 @media (max-width: 980px) {
   .menu-toggle {
+    position: fixed;
+    top: max(5px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 1002;
     display: block;
   }
 
   .nav-panel {
     position: fixed;
-    top: 58px;
+    top: calc(58px + env(safe-area-inset-top));
     left: 12px;
     right: 12px;
     max-height: calc(100vh - 74px);
@@ -2026,47 +1976,60 @@ dd {
   }
 
   .swamp-status-copy {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.65rem;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    align-items: stretch;
   }
 
   .swamp-status h2 {
-    font-size: 1.16rem;
-  }
-
-  .swamp-status-message,
-  .swamp-status-updated {
-    font-size: 0.78rem;
+    font-size: 1.24rem;
+    line-height: 1.05;
   }
 
   .swamp-status-stats {
-    grid-template-columns: 0.8fr 1.35fr 0.7fr;
-    gap: 0.35rem;
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
   }
 
   .swamp-status-stats div {
-    padding: 0.48rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
   }
 
   .swamp-status-stats dt {
-    font-size: 0.62rem;
+    margin-bottom: 0.18rem;
+    font-size: 0.68rem;
   }
 
   .swamp-status-stats dd {
-    font-size: 0.82rem;
+    font-size: 1rem;
+    max-width: 100%;
+    white-space: normal;
+    writing-mode: horizontal-tb;
+    word-break: normal;
+    overflow-wrap: normal;
   }
 
   .swamp-progress-label {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
   }
 
   .status-gator {
-    width: 66px;
-    height: 66px;
+    width: 64px;
+    height: 64px;
   }
 
   .swamp-status-actions {
-    align-self: end;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-self: stretch;
+    align-items: center;
+    justify-content: stretch;
+  }
+
+  .swamp-status-actions .btn {
+    width: 100%;
   }
 
   .hero-visual img {
@@ -2152,6 +2115,7 @@ dd {
 
   .ticker-track {
     gap: 0.75rem;
+    font-size: 0.78rem;
   }
 
   .footer-grid {
@@ -2180,6 +2144,7 @@ dd {
   .map-marker {
     width: 58px;
   }
+
 }
 
 @media (max-width: 767px) {
@@ -2235,8 +2200,6 @@ dd {
   .radar,
   .route-path,
   .gator-ripple,
-  .status-gator.is-tapped,
-  .status-gator.is-tapped .status-gator-ripple,
   .fog-bank,
   .scanlines,
   .water-reflection,
@@ -2276,7 +2239,7 @@ dd {
 
   .ticker-track {
     width: auto;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     transform: none !important;
   }
 

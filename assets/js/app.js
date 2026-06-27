@@ -31,46 +31,52 @@ const marketDataConfig = {
   refreshIntervalMs: 30000
 };
 
-const roadmapConfig = {
-  chapterTargets: [50, 100, 250, 500, 1000, 1500],
+const chapterConfig = {
   milestones: [
     {
       chapter: 1,
       target: 50,
       title: "GATOR WAKES UP",
-      description: "The first yaps hit the timeline."
+      description: "The founding swamp community comes together."
     },
     {
       chapter: 2,
       target: 100,
       title: "SWAMP GETS LOUD",
-      description: "The community starts flooding the feed with original Yapgator memes."
+      description: "Raids, original memes, replies, and daily momentum."
     },
     {
       chapter: 3,
       target: 250,
       title: "YAP SEASON",
-      description: "Community contests, meme battles, and new Gator artwork."
+      description: "Contests, meme battles, featured members, and new artwork."
     },
     {
       chapter: 4,
       target: 500,
       title: "GATOR STRONG",
-      description: "The Yapgator world expands with new scenes, stories, and community creations."
+      description: "New scenes, stories, community creations, and larger campaigns."
     },
     {
       chapter: 5,
       target: 1000,
       title: "CITY TAKEOVER",
-      description: "The community chooses the next major Yapgator campaign."
+      description: "The community votes on and launches a major promotion campaign."
     },
     {
       chapter: 6,
       target: 1500,
       title: "MAKE THE WAVE",
-      description: "One Gator. One Fam. One Mission."
+      description: "A milestone celebration and the next chapter chosen by the swamp."
     }
   ]
+};
+
+const roadmapConfig = {
+  get chapterTargets() {
+    return chapterConfig.milestones.map((milestone) => milestone.target);
+  },
+  milestones: chapterConfig.milestones
 };
 
 (() => {
@@ -525,7 +531,6 @@ const roadmapConfig = {
     const currentTarget = Number(data.currentTarget);
     const nextTarget = Number(data.nextTarget);
     const progressPercent = Number(data.progressPercent);
-    const updatedAt = hasValue(data.updatedAt) ? data.updatedAt.trim() : "";
 
     if (!Number.isInteger(members) || members < 0) return null;
     if (!Number.isInteger(currentChapter) || currentChapter < 0 || currentChapter > roadmapConfig.chapterTargets.length) return null;
@@ -533,7 +538,7 @@ const roadmapConfig = {
     if (!Number.isFinite(nextTarget) || nextTarget <= 0) return null;
     if (!Number.isFinite(progressPercent) || progressPercent < 0 || progressPercent > 100) return null;
 
-    return { members, currentChapter, currentTarget, nextTarget, progressPercent, updatedAt };
+    return { members, currentChapter, currentTarget, nextTarget, progressPercent };
   };
 
   const getChapterProgress = (status = telegramStatus) => {
@@ -678,40 +683,31 @@ const roadmapConfig = {
     if (!root) return;
     const live = qs("[data-swamp-status-live]", root);
     const progress = qs("[data-swamp-progress]", root);
-    const message = qs("[data-swamp-status-message]", root);
     const members = qs("[data-swamp-members]", root);
     const chapter = qs("[data-swamp-chapter]", root);
     const nextTarget = qs("[data-swamp-next-target]", root);
     const progressText = qs("[data-swamp-progress-text]", root);
     const progressPercent = qs("[data-swamp-progress-percent]", root);
     const progressFill = qs("[data-swamp-progress-fill]", root);
-    const updated = qs("[data-swamp-updated]", root);
 
     if (!status) {
       root.classList.remove("is-live");
-      if (message) message.textContent = "Swamp signal updating";
       if (live) live.hidden = true;
       if (progress) progress.hidden = true;
-      if (updated) updated.textContent = "";
       return;
     }
 
     root.classList.add("is-live");
-    if (message) message.textContent = "Live Telegram signal locked";
     if (live) live.hidden = false;
     if (progress) progress.hidden = false;
     const chapterIndex = getCurrentChapterIndex(status);
     const milestone = roadmapConfig.milestones[chapterIndex];
     animateNumber(members, status.members);
     if (chapter) chapter.textContent = milestone ? `CHAPTER ${milestone.chapter} — ${milestone.title}` : `CHAPTER ${status.currentChapter}`;
-    if (nextTarget) nextTarget.textContent = formatNumber(status.nextTarget);
+    if (nextTarget) nextTarget.textContent = `NEXT UNLOCK: ${formatNumber(status.nextTarget)} GATORS`;
     if (progressText) progressText.textContent = `${formatNumber(status.members)} / ${formatNumber(status.nextTarget)}`;
     if (progressPercent) progressPercent.textContent = `${formatNumber(Math.round(status.progressPercent))}%`;
     if (progressFill) progressFill.style.setProperty("--swamp-progress", `${status.progressPercent}%`);
-    if (updated) {
-      const date = new Date(status.updatedAt);
-      updated.textContent = Number.isNaN(date.getTime()) ? "Updates automatically" : `Updates automatically · ${date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
-    }
   };
 
   const initTelegramStatus = async () => {
@@ -804,27 +800,6 @@ const roadmapConfig = {
     window.setInterval(fetchMarketData, Math.max(5000, marketDataConfig.refreshIntervalMs));
   };
 
-  const initGatorAction = () => {
-    const button = qs("[data-gator-action]");
-    if (!button) return;
-    let lastPlayAt = 0;
-
-    button.addEventListener("click", () => {
-      const now = performance.now();
-      if (now - lastPlayAt < 900) return;
-      lastPlayAt = now;
-
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      if (!prefersReducedMotion) {
-        button.classList.remove("is-tapped");
-        void button.offsetWidth;
-        button.classList.add("is-tapped");
-        window.setTimeout(() => button.classList.remove("is-tapped"), 760);
-      }
-    });
-  };
-
   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   window.addEventListener("appinstalled", handleAppInstalled);
 
@@ -842,7 +817,6 @@ const roadmapConfig = {
     initRoadmapSwim();
     initReveal();
     initLightBloom();
-    initGatorAction();
     initTelegramStatus();
     initMarketFeed();
     initServiceWorker();
