@@ -34,7 +34,7 @@ Current local artwork assignments are centralized in `assets/js/app.js`:
 - `assets/images/yapgator-community.png`: Community and Official Links artwork.
 - `assets/images/yapgator-install.png`: Install App section artwork, renamed from the previously unused `yapgator-new-2.png`.
 - `assets/images/pump-logomark.svg`: local Pump.fun footer asset when available.
-- `assets/images/favicon.svg`: local Yapgator gator-eye emblem.
+- `assets/images/favicon.svg`: local wrapper for the real Yapgator character icon.
 
 Do not recompress, recolor, crop permanently, or otherwise modify the image pixels unless that is a separate explicit design task.
 

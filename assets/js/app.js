@@ -497,6 +497,21 @@ const roadmapConfig = {
     });
   };
 
+  const renderRoadmapMarkers = () => {
+    qsa("[data-roadmap-marker]").forEach((marker) => {
+      const index = Number(marker.getAttribute("data-roadmap-marker"));
+      const milestone = roadmapConfig.milestones[index];
+      if (!milestone) return;
+
+      marker.dataset.target = String(milestone.target);
+      marker.setAttribute("aria-label", `Chapter ${milestone.chapter}: ${milestone.title}. Target ${formatNumber(milestone.target)} Telegram members.`);
+      const number = qs("span", marker);
+      const title = qs("strong", marker);
+      if (number) number.textContent = String(milestone.chapter);
+      if (title) title.textContent = milestone.title;
+    });
+  };
+
   const getCurrentChapterIndex = (status = telegramStatus) => {
     if (!status) return 0;
     if (status.members >= roadmapConfig.chapterTargets[roadmapConfig.chapterTargets.length - 1]) {
@@ -506,8 +521,25 @@ const roadmapConfig = {
   };
 
   const getChapterRouteProgress = (index) => {
-    const stops = [0.04, 0.22, 0.39, 0.58, 0.75, 0.96];
+    const stops = [0.08, 0.22, 0.39, 0.58, 0.75, 0.96];
     return stops[Math.max(0, Math.min(stops.length - 1, index))];
+  };
+
+  const getRouteProgress = (status = telegramStatus) => {
+    if (!status) return getChapterRouteProgress(0);
+    const targets = roadmapConfig.chapterTargets;
+    const stops = targets.map((_target, index) => getChapterRouteProgress(index));
+
+    if (status.members >= targets[targets.length - 1]) return stops[stops.length - 1];
+
+    const activeIndex = Math.max(0, Math.min(targets.length - 1, status.currentChapter - 1));
+    const lowerTarget = activeIndex === 0 ? 0 : targets[activeIndex - 1];
+    const upperTarget = targets[activeIndex];
+    const start = activeIndex === 0 ? 0.04 : stops[activeIndex - 1];
+    const end = stops[activeIndex];
+    const segmentProgress = Math.max(0, Math.min(1, (status.members - lowerTarget) / Math.max(upperTarget - lowerTarget, 1)));
+
+    return start + (end - start) * segmentProgress;
   };
 
   const renderRoadmapDetail = (index = selectedRoadmapIndex) => {
@@ -559,7 +591,7 @@ const roadmapConfig = {
     const markers = qsa("[data-roadmap-marker]");
     if (!route || !gator || typeof route.getTotalLength !== "function") return;
 
-    const routeProgress = getChapterRouteProgress(getCurrentChapterIndex(status));
+    const routeProgress = getRouteProgress(status);
     const length = route.getTotalLength();
     const point = route.getPointAtLength(length * routeProgress);
     gator.style.transform = `translate(${point.x}px, ${point.y}px)`;
@@ -572,7 +604,7 @@ const roadmapConfig = {
     if (!route || !gator || typeof route.getTotalLength !== "function") return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const targetProgress = getChapterRouteProgress(getCurrentChapterIndex());
+    const targetProgress = getRouteProgress();
     const length = route.getTotalLength();
     activeRoadmapAnimation += 1;
     const animationId = activeRoadmapAnimation;
@@ -608,7 +640,8 @@ const roadmapConfig = {
     const activeIndex = getCurrentChapterIndex(status);
 
     markers.forEach((marker, index) => {
-      const target = Number(marker.getAttribute("data-target"));
+      const milestone = roadmapConfig.milestones[index];
+      const target = milestone ? milestone.target : Number(marker.getAttribute("data-target"));
       const complete = Boolean(status && Number.isFinite(target) && status.members >= target);
       const active = Boolean(status) && index === activeIndex;
       marker.classList.toggle("is-complete", complete);
@@ -737,14 +770,12 @@ const roadmapConfig = {
     const marketCap = Number(data.marketCap);
     const volume24h = Number(data.volume24h);
     const bondingCurveProgress = Number(data.bondingCurveProgress);
-    const lastUpdated = hasValue(data.lastUpdated) ? data.lastUpdated.trim() : new Date().toISOString();
 
     return {
       price: Number.isFinite(price) && price > 0 ? price : null,
       marketCap: Number.isFinite(marketCap) && marketCap > 0 ? marketCap : null,
       volume24h: Number.isFinite(volume24h) && volume24h >= 0 ? volume24h : null,
-      bondingCurveProgress: Number.isFinite(bondingCurveProgress) && bondingCurveProgress >= 0 && bondingCurveProgress <= 100 ? bondingCurveProgress : null,
-      lastUpdated
+      bondingCurveProgress: Number.isFinite(bondingCurveProgress) && bondingCurveProgress >= 0 && bondingCurveProgress <= 100 ? bondingCurveProgress : null
     };
   };
 
@@ -758,16 +789,11 @@ const roadmapConfig = {
     const capNode = qs("[data-market-cap]");
     const volumeNode = qs("[data-market-volume]");
     const progressNode = qs("[data-market-progress]");
-    const updatedNode = qs("[data-market-updated]");
 
     if (values.price !== null && priceNode) priceNode.textContent = formatMoney(values.price);
     if (values.marketCap !== null && capNode) capNode.textContent = formatMoney(values.marketCap, { maximumFractionDigits: 0 });
     if (values.volume24h !== null && volumeNode) volumeNode.textContent = formatMoney(values.volume24h, { maximumFractionDigits: 0 });
     if (values.bondingCurveProgress !== null && progressNode) progressNode.textContent = `${formatNumber(values.bondingCurveProgress)}%`;
-    if (updatedNode) {
-      const date = new Date(values.lastUpdated);
-      updatedNode.textContent = Number.isNaN(date.getTime()) ? values.lastUpdated : date.toLocaleString();
-    }
 
     feed.hidden = false;
     return true;
@@ -813,6 +839,7 @@ const roadmapConfig = {
     initFaq();
     initCopyContract();
     initInstallApp();
+    renderRoadmapMarkers();
     initRoadmapMarkers();
     initRoadmapSwim();
     initReveal();

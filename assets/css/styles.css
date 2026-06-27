@@ -447,7 +447,7 @@ a {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 
@@ -460,6 +460,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 1000;
+  min-height: calc(54px + env(safe-area-inset-top));
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(1, 8, 9, 0.78);
@@ -484,7 +485,7 @@ a {
   align-items: center;
   justify-content: flex-end;
   width: min(1180px, calc(100% - 24px));
-  min-height: 58px;
+  min-height: calc(54px + env(safe-area-inset-top));
   margin-inline: auto;
   gap: 1rem;
 }
@@ -560,7 +561,7 @@ a {
 .menu-toggle {
   display: none;
   position: relative;
-  z-index: 3;
+  z-index: 5;
   width: 48px;
   height: 48px;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -576,6 +577,7 @@ a {
   display: flex;
   align-items: center;
   width: 100%;
+  height: 100%;
   min-width: 0;
   overflow: hidden;
   border-block: 1px solid rgba(255, 255, 255, 0.09);
@@ -795,32 +797,40 @@ body.opening-impact .hero-actions .btn-primary {
   line-height: 1;
 }
 
-.swamp-status-stats {
+.swamp-status-stack {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: 0.4rem;
+  min-width: 0;
   margin: 0.65rem 0 0;
 }
 
-.swamp-status-stats div {
+.swamp-status-stack p {
   min-width: 0;
-  padding: 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.22);
-}
-
-.swamp-status-stats dt {
-  min-width: 0;
-}
-
-.swamp-status-stats dd {
-  font-size: clamp(0.95rem, 2vw, 1.45rem);
-  line-height: 1.12;
-  min-width: 0;
+  margin: 0;
   writing-mode: horizontal-tb;
   word-break: normal;
   overflow-wrap: normal;
+}
+
+.swamp-member-line {
+  color: var(--text);
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-weight: 1000;
+  line-height: 1.05;
+}
+
+.swamp-chapter-line {
+  color: var(--gold);
+  font-size: clamp(1rem, 2.4vw, 1.35rem);
+  font-weight: 1000;
+  line-height: 1.16;
+}
+
+.swamp-next-line {
+  color: var(--green);
+  font-size: clamp(0.95rem, 2vw, 1.12rem);
+  font-weight: 900;
+  line-height: 1.18;
 }
 
 .swamp-progress {
@@ -879,9 +889,11 @@ body.opening-impact .hero-actions .btn-primary {
 
 .ticker-track {
   display: flex;
+  align-items: center;
   width: max-content;
+  min-height: 100%;
   gap: 1.2rem;
-  padding: 0.55rem max(86px, env(safe-area-inset-right)) 0.55rem max(18px, env(safe-area-inset-left));
+  padding: env(safe-area-inset-top) max(86px, env(safe-area-inset-right)) 0 max(18px, env(safe-area-inset-left));
   color: var(--text);
   font-weight: 1000;
   font-size: 0.82rem;
@@ -1356,20 +1368,13 @@ dd {
 .map-gator {
   transform-box: fill-box;
   transform-origin: center;
-  filter: drop-shadow(0 0 13px rgba(55, 255, 134, 0.55));
+  filter: drop-shadow(0 0 12px rgba(55, 255, 134, 0.62)) drop-shadow(0 0 7px rgba(40, 169, 255, 0.42));
   transition: transform 700ms ease;
   animation: gatorFloat 3.4s ease-in-out infinite alternate;
 }
 
 .route-gator-image {
-  filter: drop-shadow(0 0 10px rgba(55, 255, 134, 0.58)) drop-shadow(0 0 8px rgba(40, 169, 255, 0.34));
-}
-
-.gator-ripple {
-  fill: none;
-  stroke: rgba(40, 169, 255, 0.58);
-  stroke-width: 3;
-  animation: ripplePulse 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(55, 255, 134, 0.58)) drop-shadow(0 0 6px rgba(40, 169, 255, 0.34));
 }
 
 .fog-bank {
@@ -1751,11 +1756,6 @@ dd {
   to { translate: 0 4px; }
 }
 
-@keyframes ripplePulse {
-  0%, 100% { opacity: 0.32; transform: scale(0.85); }
-  50% { opacity: 0.74; transform: scale(1.12); }
-}
-
 @keyframes neonSweep {
   to { transform: translateX(115%); }
 }
@@ -1863,6 +1863,7 @@ dd {
     right: max(12px, env(safe-area-inset-right));
     z-index: 1002;
     display: block;
+    background: rgba(1, 8, 9, 0.9);
   }
 
   .nav-panel {
@@ -1986,29 +1987,20 @@ dd {
     line-height: 1.05;
   }
 
-  .swamp-status-stats {
-    grid-template-columns: 1fr;
-    gap: 0.55rem;
+  .swamp-status-stack {
+    gap: 0.45rem;
   }
 
-  .swamp-status-stats div {
-    padding: 0;
-    border: 0;
-    background: transparent;
+  .swamp-member-line {
+    font-size: 1.22rem;
   }
 
-  .swamp-status-stats dt {
-    margin-bottom: 0.18rem;
-    font-size: 0.68rem;
-  }
-
-  .swamp-status-stats dd {
+  .swamp-chapter-line {
     font-size: 1rem;
-    max-width: 100%;
-    white-space: normal;
-    writing-mode: horizontal-tb;
-    word-break: normal;
-    overflow-wrap: normal;
+  }
+
+  .swamp-next-line {
+    font-size: 0.92rem;
   }
 
   .swamp-progress-label {
@@ -2199,7 +2191,6 @@ dd {
   .image-orbit,
   .radar,
   .route-path,
-  .gator-ripple,
   .fog-bank,
   .scanlines,
   .water-reflection,
