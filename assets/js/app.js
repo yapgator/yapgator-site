@@ -347,11 +347,16 @@ const roadmapConfig = {
   };
 
   const initLightBloom = () => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     qsa("[data-light-panel]").forEach((panel) => {
       panel.addEventListener("pointermove", (event) => {
         const rect = panel.getBoundingClientRect();
         panel.style.setProperty("--mx", `${event.clientX - rect.left}px`);
         panel.style.setProperty("--my", `${event.clientY - rect.top}px`);
+      });
+      panel.addEventListener("pointerleave", () => {
+        panel.style.removeProperty("--mx");
+        panel.style.removeProperty("--my");
       });
     });
   };

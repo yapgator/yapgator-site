@@ -60,15 +60,14 @@ body::before {
   overflow: hidden;
   background:
     radial-gradient(circle at 50% 18%, rgba(55, 255, 134, 0.2), transparent 30rem),
-    radial-gradient(circle at 18% 78%, rgba(40, 169, 255, 0.16), transparent 24rem),
-    radial-gradient(circle at 86% 38%, rgba(40, 169, 255, 0.13), transparent 26rem);
+    radial-gradient(circle at 18% 78%, rgba(40, 169, 255, 0.12), transparent 24rem);
 }
 
 .global-neon-pulse,
 .global-blue-pool {
   position: absolute;
   border-radius: 50%;
-  filter: blur(30px);
+  filter: blur(24px);
 }
 
 .global-neon-pulse {
@@ -82,20 +81,17 @@ body::before {
 }
 
 .global-blue-pool {
-  width: min(72vw, 680px);
+  width: min(74vw, 720px);
   aspect-ratio: 1;
-  background: radial-gradient(circle, rgba(40, 169, 255, 0.25), rgba(40, 169, 255, 0.09) 42%, transparent 70%);
-  opacity: 0.78;
+  background: radial-gradient(circle, rgba(40, 169, 255, 0.3), rgba(40, 169, 255, 0.12) 42%, transparent 70%);
+  opacity: 0.72;
+  transform: translate3d(0, 0, 0);
+  animation: blueLightDrift 15s ease-in-out infinite alternate;
 }
 
 .global-blue-one {
-  left: -18%;
-  top: 38%;
-}
-
-.global-blue-two {
-  right: -16%;
-  bottom: 2%;
+  left: -14%;
+  top: 42%;
 }
 
 .viewport-edge-light {
@@ -104,8 +100,11 @@ body::before {
   z-index: 900;
   pointer-events: none;
   overflow: hidden;
-  border: 1px solid rgba(245, 200, 75, 0.5);
-  box-shadow: inset 0 0 18px rgba(245, 200, 75, 0.26), inset 0 0 36px rgba(55, 255, 134, 0.08);
+  border: 1px solid rgba(245, 200, 75, 0.78);
+  box-shadow:
+    inset 0 0 18px rgba(245, 200, 75, 0.36),
+    inset 0 0 38px rgba(55, 255, 134, 0.18),
+    inset 0 0 4px rgba(245, 255, 168, 0.56);
 }
 
 .site-header,
@@ -126,18 +125,39 @@ main,
   content: "";
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(55, 255, 134, 0.18);
+  border: 1px solid rgba(55, 255, 134, 0.2);
+  background:
+    radial-gradient(circle at 0 0, rgba(55, 255, 134, 0.34), transparent 7rem),
+    radial-gradient(circle at 100% 0, rgba(55, 255, 134, 0.28), transparent 7rem),
+    radial-gradient(circle at 100% 100%, rgba(245, 200, 75, 0.2), transparent 7rem),
+    radial-gradient(circle at 0 100%, rgba(245, 200, 75, 0.18), transparent 7rem);
 }
 
 .viewport-edge-light span {
   position: absolute;
   left: 0;
   top: 0;
-  width: 34%;
+  width: min(34vw, 260px);
   height: 3px;
-  background: linear-gradient(90deg, transparent, var(--gold), var(--green), transparent);
-  box-shadow: 0 0 18px rgba(245, 200, 75, 0.72), 0 0 24px rgba(55, 255, 134, 0.28);
-  animation: edgeCircuit 11s linear infinite;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 246, 173, 0.86), var(--gold), transparent);
+  box-shadow: 0 0 20px rgba(245, 200, 75, 0.9), 0 0 30px rgba(55, 255, 134, 0.34);
+  transform-origin: center;
+  animation: edgeCircuit 12s linear infinite;
+}
+
+.viewport-edge-light::after {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 18px rgba(245, 200, 75, 0.95), 0 0 28px rgba(55, 255, 134, 0.4);
+  opacity: 0;
+  animation: cornerFlare 10s ease-in-out infinite;
 }
 
 body.opening-impact .global-neon-pulse {
@@ -146,6 +166,10 @@ body.opening-impact .global-neon-pulse {
 
 body.opening-impact .viewport-edge-light {
   animation: openingEdge 1.5s ease-out both;
+}
+
+body.opening-impact .brand-logo {
+  animation: impactPulse 1.45s ease-out both;
 }
 
 body.menu-open {
@@ -446,7 +470,7 @@ a {
   z-index: 1000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(1, 8, 9, 0.78);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(10px);
 }
 
 .nav {
@@ -465,6 +489,26 @@ a {
   gap: 0.7rem;
   font-weight: 1000;
   text-decoration: none;
+}
+
+.brand-logo {
+  display: inline-grid;
+  place-items: center;
+  width: clamp(48px, 4.9vw, 58px);
+  height: clamp(48px, 4.9vw, 58px);
+  overflow: hidden;
+  flex: 0 0 auto;
+  border: 1px solid rgba(55, 255, 134, 0.44);
+  border-radius: 10px;
+  background: radial-gradient(circle at 35% 25%, rgba(55, 255, 134, 0.24), rgba(2, 12, 12, 0.94));
+  box-shadow: 0 0 20px rgba(55, 255, 134, 0.36), 0 0 18px rgba(40, 169, 255, 0.2), inset 0 0 14px rgba(245, 200, 75, 0.1);
+}
+
+.brand-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .nav-panel {
@@ -556,9 +600,10 @@ a {
 }
 
 .scanlines {
-  opacity: 0.15;
+  opacity: 0;
   background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px 8px);
-  animation: scanMove 6s linear infinite;
+  transform: translateY(-100%);
+  animation: scanPass 11s ease-in-out 2s infinite;
 }
 
 .city-glow {
@@ -566,14 +611,14 @@ a {
   top: 38%;
   height: 28%;
   background: linear-gradient(90deg, transparent, rgba(40, 169, 255, 0.18), rgba(55, 255, 134, 0.15), transparent);
-  filter: blur(30px);
+  filter: blur(22px);
 }
 
 .fog-layer {
   top: auto;
   height: 36%;
   background: linear-gradient(90deg, transparent, rgba(210, 255, 238, 0.14), transparent);
-  filter: blur(22px);
+  filter: blur(16px);
   animation: fogDrift 14s ease-in-out infinite alternate;
 }
 
@@ -603,7 +648,10 @@ body.opening-impact .hero-copy h1 {
   animation: titleOpeningGlow 1.5s ease-out both;
 }
 
-body.opening-impact .brand .gator-emblem,
+body.opening-impact .hero-copy h1::after {
+  animation: neonSweep 1s ease 180ms both;
+}
+
 body.opening-impact .hero-visual img,
 body.opening-impact .hero-actions .btn-primary {
   animation: impactPulse 1.45s ease-out both;
@@ -694,10 +742,13 @@ body.opening-impact .hero-actions .btn-primary {
   background:
     repeating-linear-gradient(0deg, rgba(55, 255, 134, 0.26) 0 3px, rgba(40, 169, 255, 0.08) 3px 8px, transparent 8px 16px),
     linear-gradient(180deg, rgba(245, 200, 75, 0.16), transparent);
-  filter: blur(15px);
+  filter: blur(11px);
   transform: perspective(320px) rotateX(68deg);
   opacity: 0.65;
-  animation: waterShimmer 4.8s ease-in-out infinite alternate;
+}
+
+.hero-visual.reveal.is-visible .water-reflection {
+  animation: reflectionRipple 1200ms ease-out 240ms both;
 }
 
 .meme-ticker {
@@ -786,7 +837,22 @@ body.opening-impact .hero-actions .btn-primary {
   pointer-events: none;
   background: linear-gradient(110deg, transparent, rgba(55, 255, 134, 0.1), transparent 58%);
   transform: translateX(-120%);
-  animation: panelBeam 8s ease-in-out infinite;
+}
+
+.install-panel.reveal.is-visible::before,
+.command-center.reveal.is-visible::before,
+.swamp-map.reveal.is-visible::before,
+.community-panel.reveal.is-visible::before {
+  animation: panelBeam 1100ms ease-out 180ms both;
+}
+
+.install-panel.reveal.is-visible .install-cta,
+.command-center.reveal.is-visible .btn-primary {
+  animation: buttonEnterPulse 820ms ease-out 420ms both;
+}
+
+.command-center.reveal.is-visible::before {
+  animation: scanPass 1050ms ease-out both;
 }
 
 .install-copy p:not(.eyebrow),
@@ -814,6 +880,29 @@ body.opening-impact .hero-actions .btn-primary {
   border: 1px solid rgba(245, 200, 75, 0.28);
   border-radius: 14px;
   box-shadow: 0 0 36px rgba(55, 255, 134, 0.2), 0 0 42px rgba(40, 169, 255, 0.15);
+}
+
+.install-media::after,
+.command-media::after,
+.community-media::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -10%;
+  height: 26%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(55, 255, 134, 0.42), rgba(245, 200, 75, 0.24), transparent);
+  filter: blur(10px);
+  opacity: 0;
+  transform: translateY(8px) scaleX(0.85);
+}
+
+.install-panel.reveal.is-visible .install-media::after,
+.command-center.reveal.is-visible .command-media::after,
+.community-panel.reveal.is-visible .community-media::after {
+  animation: mediaReflectionRipple 1200ms ease-out 260ms both;
 }
 
 .install-media img {
@@ -936,16 +1025,19 @@ body.opening-impact .hero-actions .btn-primary {
   object-position: 48% 42%;
 }
 
-.monitor-glow,
-.community-media::after {
+.monitor-glow {
   position: absolute;
   content: "";
   inset: auto 0 0;
   height: 36%;
   background: repeating-linear-gradient(0deg, rgba(55, 255, 134, 0.16) 0 2px, transparent 2px 9px);
   mix-blend-mode: screen;
-  opacity: 0.45;
-  animation: waterShimmer 5s ease-in-out infinite alternate;
+  opacity: 0.32;
+  transform: translateY(8px);
+}
+
+.command-center.reveal.is-visible .monitor-glow {
+  animation: monitorSweep 1200ms ease-out 260ms both;
 }
 
 .status-grid {
@@ -1213,6 +1305,10 @@ dd {
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34), 0 0 30px rgba(55, 255, 134, 0.38), 0 0 18px rgba(245, 200, 75, 0.26);
 }
 
+.map-marker[aria-expanded="true"] {
+  animation: markerFlash 680ms ease-out;
+}
+
 .map-marker.is-complete {
   border-color: rgba(245, 200, 75, 0.8);
 }
@@ -1367,7 +1463,6 @@ dd {
   position: absolute;
   inset: 0;
   background: rgba(0, 6, 6, 0.72);
-  backdrop-filter: blur(8px);
 }
 
 .install-dialog-panel {
@@ -1490,9 +1585,8 @@ dd {
 
 .js .reveal {
   opacity: 0;
-  filter: blur(8px);
   transform: translateY(24px) scale(0.97);
-  transition: opacity 760ms ease, transform 760ms ease, filter 760ms ease;
+  transition: opacity 760ms ease, transform 760ms ease;
 }
 
 .js .reveal-left {
@@ -1505,8 +1599,8 @@ dd {
 
 .js .reveal.is-visible {
   opacity: 1;
-  filter: blur(0);
   transform: translate(0, 0) scale(1);
+  will-change: auto;
 }
 
 .stagger-group .reveal:nth-child(2) {
@@ -1548,11 +1642,6 @@ dd {
   to { stroke-dashoffset: -180; }
 }
 
-@keyframes waterShimmer {
-  from { transform: translateY(0) perspective(320px) rotateX(68deg); background-position: 0 0; }
-  to { transform: translateY(6px) perspective(320px) rotateX(68deg); background-position: 0 28px; }
-}
-
 @keyframes gatorFloat {
   from { translate: 0 -2px; }
   to { translate: 0 4px; }
@@ -1572,25 +1661,33 @@ dd {
   100% { opacity: 0; transform: scale(12); }
 }
 
-@keyframes scanMove {
-  to { background-position: 0 64px; }
-}
-
 @keyframes globalGreenPulse {
-  0%, 100% { opacity: 0.48; transform: translate(-50%, -50%) scale(0.86); }
-  50% { opacity: 0.92; transform: translate(-50%, -50%) scale(1.12); }
+  0%, 100% { opacity: 0.44; transform: translate(-50%, -50%) scale(0.84); }
+  50% { opacity: 0.96; transform: translate(-50%, -50%) scale(1.14); }
 }
 
 @keyframes edgeCircuit {
-  0% { left: -34%; top: 0; width: 34%; height: 3px; transform: none; }
-  24% { left: 100%; top: 0; width: 34%; height: 3px; transform: none; }
-  25% { left: calc(100% - 3px); top: -34%; width: 3px; height: 34%; transform: none; }
-  49% { left: calc(100% - 3px); top: 100%; width: 3px; height: 34%; transform: none; }
-  50% { left: 100%; top: calc(100% - 3px); width: 34%; height: 3px; transform: rotate(180deg); }
-  74% { left: -34%; top: calc(100% - 3px); width: 34%; height: 3px; transform: rotate(180deg); }
-  75% { left: 0; top: 100%; width: 3px; height: 34%; transform: rotate(180deg); }
-  99% { left: 0; top: -34%; width: 3px; height: 34%; transform: rotate(180deg); }
-  100% { left: -34%; top: 0; width: 34%; height: 3px; transform: none; }
+  0% { transform: translate3d(-100%, 0, 0) rotate(0deg); }
+  24% { transform: translate3d(100vw, 0, 0) rotate(0deg); }
+  25% { transform: translate3d(calc(100vw - 50%), 0, 0) rotate(90deg); }
+  49% { transform: translate3d(calc(100vw - 50%), 100vh, 0) rotate(90deg); }
+  50% { transform: translate3d(100vw, calc(100vh - 3px), 0) rotate(180deg); }
+  74% { transform: translate3d(-100%, calc(100vh - 3px), 0) rotate(180deg); }
+  75% { transform: translate3d(-50%, 100vh, 0) rotate(270deg); }
+  99% { transform: translate3d(-50%, -100%, 0) rotate(270deg); }
+  100% { transform: translate3d(-100%, 0, 0) rotate(0deg); }
+}
+
+@keyframes blueLightDrift {
+  from { opacity: 0.48; transform: translate3d(-4%, 6%, 0) scale(0.92); }
+  to { opacity: 0.82; transform: translate3d(20%, -8%, 0) scale(1.08); }
+}
+
+@keyframes cornerFlare {
+  0%, 23%, 27%, 48%, 52%, 73%, 77%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.7); }
+  25% { opacity: 0.9; transform: translate3d(calc(100vw - 4px), 0, 0) scale(1.15); }
+  50% { opacity: 0.84; transform: translate3d(calc(100vw - 4px), calc(100vh - 4px), 0) scale(1.08); }
+  75% { opacity: 0.76; transform: translate3d(0, calc(100vh - 4px), 0) scale(1); }
 }
 
 @keyframes openingBloom {
@@ -1616,8 +1713,43 @@ dd {
 }
 
 @keyframes panelBeam {
-  0%, 42%, 100% { transform: translateX(-120%); }
-  64% { transform: translateX(120%); }
+  from { opacity: 0; transform: translateX(-120%); }
+  36% { opacity: 1; }
+  to { opacity: 0; transform: translateX(120%); }
+}
+
+@keyframes scanPass {
+  from { opacity: 0; transform: translateY(-100%); }
+  35% { opacity: 0.2; }
+  to { opacity: 0; transform: translateY(100%); }
+}
+
+@keyframes reflectionRipple {
+  0% { opacity: 0.2; transform: translateY(8px) perspective(320px) rotateX(68deg) scaleX(0.84); }
+  52% { opacity: 0.82; transform: translateY(0) perspective(320px) rotateX(68deg) scaleX(1.03); }
+  100% { opacity: 0.65; transform: translateY(0) perspective(320px) rotateX(68deg) scaleX(1); }
+}
+
+@keyframes mediaReflectionRipple {
+  0% { opacity: 0; transform: translateY(8px) scaleX(0.82); }
+  48% { opacity: 0.68; transform: translateY(0) scaleX(1.06); }
+  100% { opacity: 0.18; transform: translateY(0) scaleX(1); }
+}
+
+@keyframes monitorSweep {
+  0% { opacity: 0; transform: translateY(14px) scaleY(0.82); }
+  48% { opacity: 0.62; transform: translateY(0) scaleY(1.04); }
+  100% { opacity: 0.32; transform: translateY(0) scaleY(1); }
+}
+
+@keyframes buttonEnterPulse {
+  0%, 100% { transform: translateY(0) scale(1); }
+  48% { transform: translateY(-2px) scale(1.04); box-shadow: 0 0 42px rgba(55, 255, 134, 0.56), 0 0 30px rgba(245, 200, 75, 0.28); }
+}
+
+@keyframes markerFlash {
+  0%, 100% { box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3), 0 0 16px rgba(40, 169, 255, 0.14); }
+  45% { box-shadow: 0 0 28px rgba(245, 200, 75, 0.7), 0 0 28px rgba(55, 255, 134, 0.42); }
 }
 
 @media (max-width: 980px) {
@@ -1752,12 +1884,12 @@ dd {
 
   .global-blue-pool {
     width: 92vw;
-    filter: blur(20px);
+    filter: blur(16px);
   }
 
   .viewport-edge-light {
     border-width: 1px;
-    box-shadow: inset 0 0 12px rgba(245, 200, 75, 0.3), inset 0 0 24px rgba(55, 255, 134, 0.1);
+    box-shadow: inset 0 0 15px rgba(245, 200, 75, 0.42), inset 0 0 28px rgba(55, 255, 134, 0.16);
   }
 
   .steps-grid::before {
@@ -1820,14 +1952,9 @@ dd {
     font-size: 0.92rem;
   }
 
-  .gator-emblem {
-    width: 34px;
-    height: 34px;
-  }
-
-  .gator-emblem svg {
-    width: 29px;
-    height: 29px;
+  .brand-logo {
+    width: 48px;
+    height: 48px;
   }
 
   .hero-copy h1 {
@@ -1836,6 +1963,38 @@ dd {
 
   .map-marker {
     width: 150px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-effects .fog-two,
+  .intro-fog-b,
+  .city-glow,
+  .image-orbit,
+  .radar {
+    display: none;
+  }
+
+  .fog-layer,
+  .fog-bank {
+    filter: blur(12px);
+    animation-duration: 18s;
+  }
+
+  .intro-particles,
+  .hero::after,
+  .story-section::before,
+  .community-section::before {
+    animation: none;
+    opacity: 0.22;
+  }
+
+  .scanlines {
+    animation-duration: 18s;
+  }
+
+  [data-light-panel]::after {
+    display: none;
   }
 }
 
@@ -1868,10 +2027,14 @@ dd {
   .global-neon-pulse,
   .global-blue-pool,
   .viewport-edge-light span,
+  .viewport-edge-light::after,
   .install-panel::before,
+  .install-media::after,
   .command-center::before,
+  .command-media::after,
   .swamp-map::before,
   .community-panel::before,
+  .community-media::after,
   .sweep-heading::after {
     animation: none !important;
     transform: none !important;
