@@ -1,16 +1,19 @@
 "use strict";
 
 const launchConfig = {
-  launched: false,
-  launchDate: "",
+  launched: true,
+  launchDate: "DAY 1 LIVE",
   xUrl: "https://x.com/YAPGAT0R",
   telegramGroupUrl: "",
   telegramBotUrl: "https://t.me/YapgatorOfficialBot",
-  pumpFunUrl: "",
-  contractAddress: "",
-  chartUrl: "",
+  pumpFunUrl: "https://pump.fun/coin/5jJxeuKLUWt2Xj8i7qGD57Y8zKWzM3YLr4Kk3kzJpump",
+  contractAddress: "5jJxeuKLUWt2Xj8i7qGD57Y8zKWzM3YLr4Kk3kzJpump",
+  chartUrl: "https://pump.fun/coin/5jJxeuKLUWt2Xj8i7qGD57Y8zKWzM3YLr4Kk3kzJpump",
+  solscanUrl: "https://solscan.io/token/5jJxeuKLUWt2Xj8i7qGD57Y8zKWzM3YLr4Kk3kzJpump",
   network: "Solana",
   platform: "Pump.fun",
+  tokenName: "YAPGATOR",
+  ticker: "$YAPGATOR",
   totalSupply: "1,000,000,000",
   decimals: "6",
   graduation: "PumpSwap"
@@ -25,10 +28,10 @@ const artworkConfig = {
 };
 
 const marketDataConfig = {
-  enabled: false,
-  endpoint: "",
-  tokenMint: "",
-  refreshIntervalMs: 30000
+  enabled: true,
+  endpoint: "https://api.dexscreener.com/latest/dex/tokens/5jJxeuKLUWt2Xj8i7qGD57Y8zKWzM3YLr4Kk3kzJpump",
+  tokenMint: "5jJxeuKLUWt2Xj8i7qGD57Y8zKWzM3YLr4Kk3kzJpump",
+  refreshIntervalMs: 60000
 };
 
 const chapterConfig = {
@@ -133,6 +136,12 @@ const roadmapConfig = {
     }).format(value);
   };
 
+  const setMarketValue = (key, value) => {
+    qsa(`[data-market-value="${key}"]`).forEach((node) => {
+      node.textContent = value;
+    });
+  };
+
   const applyArtworkConfig = () => {
     qsa("[data-artwork]").forEach((node) => {
       const key = node.getAttribute("data-artwork");
@@ -163,19 +172,19 @@ const roadmapConfig = {
       const value = safeText(launchConfig.launchDate);
       node.textContent = value;
       node.classList.toggle("empty-value", !hasValue(value));
-      if (!hasValue(value)) node.innerHTML = '<span class="sr-only">Not configured</span>';
+      if (!hasValue(value)) node.innerHTML = '<span class="sr-only">Launch date unavailable</span>';
     });
 
     qsa("[data-contract-text]").forEach((node) => {
       const value = safeText(launchConfig.contractAddress);
       node.textContent = value;
       node.classList.toggle("empty-value", !hasValue(value));
-      if (!hasValue(value)) node.innerHTML = '<span class="sr-only">Not configured</span>';
+      if (!hasValue(value)) node.innerHTML = '<span class="sr-only">Contract unavailable</span>';
     });
 
     qsa("[data-telegram-group-link]").forEach((link) => {
       if (hasValue(launchConfig.telegramGroupUrl)) {
-        setActiveLink(link, "Community Telegram", launchConfig.telegramGroupUrl);
+        setActiveLink(link, "JOIN TELEGRAM", launchConfig.telegramGroupUrl);
       } else {
         clearOptionalLink(link);
       }
@@ -183,7 +192,7 @@ const roadmapConfig = {
 
     qsa("[data-buy-link]").forEach((link) => {
       if (hasValue(launchConfig.pumpFunUrl)) {
-        setActiveLink(link, link.classList.contains("nav-buy") ? "Buy" : "Buy on Pump.fun", launchConfig.pumpFunUrl);
+        setActiveLink(link, link.classList.contains("nav-buy") ? "Buy" : "BUY $YAPGATOR", launchConfig.pumpFunUrl);
       } else {
         clearOptionalLink(link);
       }
@@ -197,14 +206,30 @@ const roadmapConfig = {
       }
     });
 
+    qsa("[data-pump-link]").forEach((link) => {
+      if (hasValue(launchConfig.pumpFunUrl)) {
+        setActiveLink(link, "View on Pump.fun", launchConfig.pumpFunUrl);
+      } else {
+        clearOptionalLink(link);
+      }
+    });
+
     qsa("[data-copy-contract]").forEach((button) => {
       if (hasValue(launchConfig.contractAddress)) {
         button.disabled = false;
-        button.textContent = "Copy Contract";
+        button.textContent = "Copy CA";
         setHidden(button, false);
       } else {
         button.disabled = true;
         setHidden(button, true);
+      }
+    });
+
+    qsa("[data-solscan-link]").forEach((link) => {
+      if (hasValue(launchConfig.solscanUrl)) {
+        setActiveLink(link, "View on Solscan", launchConfig.solscanUrl);
+      } else {
+        clearOptionalLink(link);
       }
     });
 
@@ -327,7 +352,7 @@ const roadmapConfig = {
         const contract = launchConfig.contractAddress.trim();
         try {
           await navigator.clipboard.writeText(contract);
-          button.textContent = "Copied";
+          button.textContent = "Contract copied";
         } catch (_error) {
           const textArea = document.createElement("textarea");
           textArea.value = contract;
@@ -338,10 +363,10 @@ const roadmapConfig = {
           textArea.select();
           document.execCommand("copy");
           textArea.remove();
-          button.textContent = "Copied";
+          button.textContent = "Contract copied";
         }
         window.setTimeout(() => {
-          button.textContent = "Copy Contract";
+          button.textContent = "Copy CA";
         }, 1600);
       });
     });
@@ -782,53 +807,52 @@ const roadmapConfig = {
 
   const validateMarketData = (data) => {
     if (!data || typeof data !== "object") return null;
-    const price = Number(data.price);
-    const marketCap = Number(data.marketCap);
-    const volume24h = Number(data.volume24h);
-    const bondingCurveProgress = Number(data.bondingCurveProgress);
+    const exactMint = marketDataConfig.tokenMint.toLowerCase();
+    const pairs = Array.isArray(data.pairs) ? data.pairs : [];
+    const pair = pairs.find((item) => {
+      if (!item || typeof item !== "object") return false;
+      const base = String(item.baseToken?.address || "").toLowerCase();
+      const quote = String(item.quoteToken?.address || "").toLowerCase();
+      return base === exactMint || quote === exactMint;
+    });
+
+    if (!pair) return null;
+
+    const price = Number(pair.priceUsd);
+    const marketCap = Number(pair.marketCap ?? pair.fdv);
+    const volume24h = Number(pair.volume?.h24);
+    const liquidity = Number(pair.liquidity?.usd);
+    const transactions = Number(pair.txns?.h24?.buys) + Number(pair.txns?.h24?.sells);
 
     return {
       price: Number.isFinite(price) && price > 0 ? price : null,
       marketCap: Number.isFinite(marketCap) && marketCap > 0 ? marketCap : null,
       volume24h: Number.isFinite(volume24h) && volume24h >= 0 ? volume24h : null,
-      bondingCurveProgress: Number.isFinite(bondingCurveProgress) && bondingCurveProgress >= 0 && bondingCurveProgress <= 100 ? bondingCurveProgress : null
+      liquidity: Number.isFinite(liquidity) && liquidity >= 0 ? liquidity : null,
+      transactions: Number.isFinite(transactions) && transactions >= 0 ? transactions : null
     };
   };
 
   window.updateMarketData = (data) => {
-    const feed = qs("[data-market-feed]");
-    if (!feed) return false;
     const values = validateMarketData(data);
     if (!values) return false;
 
-    const priceNode = qs("[data-market-price]");
-    const capNode = qs("[data-market-cap]");
-    const volumeNode = qs("[data-market-volume]");
-    const progressNode = qs("[data-market-progress]");
-
-    if (values.price !== null && priceNode) priceNode.textContent = formatMoney(values.price);
-    if (values.marketCap !== null && capNode) capNode.textContent = formatMoney(values.marketCap, { maximumFractionDigits: 0 });
-    if (values.volume24h !== null && volumeNode) volumeNode.textContent = formatMoney(values.volume24h, { maximumFractionDigits: 0 });
-    if (values.bondingCurveProgress !== null && progressNode) progressNode.textContent = `${formatNumber(values.bondingCurveProgress)}%`;
-
-    feed.hidden = false;
+    if (values.price !== null) setMarketValue("price", formatMoney(values.price));
+    if (values.marketCap !== null) setMarketValue("marketCap", formatMoney(values.marketCap, { maximumFractionDigits: 0 }));
+    if (values.volume24h !== null) setMarketValue("volume24h", formatMoney(values.volume24h, { maximumFractionDigits: 0 }));
+    if (values.liquidity !== null) setMarketValue("liquidity", formatMoney(values.liquidity, { maximumFractionDigits: 0 }));
+    if (values.transactions !== null) setMarketValue("transactions", formatNumber(values.transactions));
+    setMarketValue("holders", "Indexing");
     return true;
   };
 
   const initMarketFeed = () => {
-    const feed = qs("[data-market-feed]");
-    if (feed) feed.hidden = true;
     if (!marketDataConfig.enabled) return;
     if (!hasValue(marketDataConfig.endpoint)) return;
 
-    // Future launch work: add the selected public market endpoint to marketDataConfig.endpoint.
-    // If the provider requires a token identifier, add the public mint to marketDataConfig.tokenMint.
     const fetchMarketData = async () => {
       try {
         const url = new URL(marketDataConfig.endpoint);
-        if (hasValue(marketDataConfig.tokenMint)) {
-          url.searchParams.set("tokenMint", marketDataConfig.tokenMint.trim());
-        }
         const response = await fetch(url.toString(), { cache: "no-store" });
         if (!response.ok) return;
         const data = await response.json();
