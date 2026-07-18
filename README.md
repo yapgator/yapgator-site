@@ -1,35 +1,31 @@
-# Yapgator Website
+# Yapgator Website and Public Releases
 
-Static pre-launch website for Yapgator on Robinhood Chain through Pons.
+Official Robinhood Chain/Pons pre-launch website for Yapgator.
 
-## Official destinations
+## Verified destinations
 
 - Website: `https://yapgator.com`
-- Telegram: `https://t.me/YapgatorOfficial` (`@YapgatorOfficial`)
-- X: `https://x.com/YAPGAT0R`
+- Community: `https://t.me/YapgatorOfficial`
+- Bot: `https://t.me/YapgatorSwampBot`
 
-Only `yapgator.com` is configured as the GitHub Pages custom domain. Do not modify DNS.
+The required GitHub Pages CNAME is `yapgator.com`. Do not modify DNS.
 
-## Launch configuration
+## Central public models
 
-All public launch-sensitive values live in `assets/js/config.js` under `window.YAPGATOR_CONFIG`. Contract address, Pons token URL, chart URL, explorer URL, market-data API URL, Telegram statistics API URL, live financial data, and graduation progress remain blank or null until verified.
+- `data/project-status.json`: versioned normalized launch/market model shared conceptually by the website, Android app and bot.
+- `data/announcements.json`: validated official announcement feed.
+- `data/app-release.json`: verified native Android release metadata.
 
-The UI derives three modes from that configuration:
+Production remains `prelaunch`. Contract, launch destination, chart, explorer, graduation target/progress and all financial fields remain `null` until independently verified. Null is never rendered as zero.
 
-1. `prelaunch`: the mascot idles at Launch Dock and no numerical progress is shown.
-2. `live` with a valid contract and graduation data: movement follows clamped graduation progress.
-3. `graduated: true`: movement follows milestone-segmented logarithmic market-cap progress.
+## Native Android release
 
-Future actions only render after their HTTPS URLs pass validation. Market data is normalized, cached in memory after success, marked stale after the configured interval, and never replaced with generated values or false zeroes. Polling pauses while the page is hidden.
+The signed native Kotlin/Jetpack Compose APK is published under `downloads/` with a SHA-256 sidecar. Download controls activate only after `app-release.json` validates. Signing keys and credentials never belong in this repository.
+
+## Data behavior
+
+The browser validates every field and official HTTPS URL, retains the previous valid result during temporary failures, marks stale data, pauses polling while hidden, and never generates market values or progress. State transitions require verified configuration. The service worker removes all older Yapgator caches, uses network-first navigation, and caches only versioned static assets.
 
 ## Safety
 
-Never commit secrets, tokens, keys, seed phrases, passwords, login codes, private endpoints, or credentials. The browser configuration must contain public information only.
-
-## Local test
-
-```sh
-python3 -m http.server 8080
-```
-
-Then inspect at desktop and responsive widths of 768, 412, 390, and 360 pixels.
+Never commit secrets, tokens, API keys, private keys, signing keys, keystores, seed phrases, passwords, login codes, private endpoints or credentials.

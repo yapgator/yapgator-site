@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "announcements": [
+    {
+      "id": "prelaunch-001",
+      "title": "Yapgator Pre-Launch Rebuild",
+      "body": "The official website, native Android app and Telegram systems are being prepared for the Robinhood Chain launch.",
+      "severity": "info",
+      "publishedAt": "2026-07-18T00:00:00Z",
+      "expiresAt": null,
+      "actionLabel": null,
+      "actionUrl": null
+    }
+  ]
+}
