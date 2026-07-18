@@ -2,21 +2,21 @@
   "schemaVersion": 1,
   "platform": "android",
   "packageName": "com.yapgator.app",
-  "versionName": "1.0.1",
-  "versionCode": 2,
+  "versionName": "1.0.2",
+  "versionCode": 3,
   "minimumSdk": 26,
-  "apkUrl": "https://yapgator.com/downloads/Yapgator-v1.0.1.apk",
-  "sha256": "4387429dc72d9ffe5aba77a9628876b8033f0fb66eeb71c8e76974c01e86362b",
+  "apkUrl": "https://yapgator.com/downloads/Yapgator-v1.0.2.apk",
+  "sha256": "d1831e31ba34691ef3493f3ea2648b53f4a4b052cee20ecf61cca139639ba0ee",
   "sizeBytes": 8877196,
-  "releasedAt": "2026-07-18T06:48:12Z",
+  "releasedAt": "2026-07-18T16:54:29Z",
   "mandatory": false,
   "changelog": [
     "Native Yapgator launch dashboard",
-    "Official-link verification",
+    "Official-link and official X verification",
     "Contract verification preparation",
     "Announcements and safety alerts",
     "Bundled offline-first launch status and announcements",
     "Clear verified, cached, offline, and unavailable states",
-    "Legitimate Gator Map"
+    "Persistent navigation with a More destination for all eight native screens"
   ]
 }

@@ -7,6 +7,7 @@ Official Robinhood Chain/Pons pre-launch website for Yapgator.
 - Website: `https://yapgator.com`
 - Community: `https://t.me/YapgatorOfficial`
 - Bot: `https://t.me/YapgatorSwampBot`
+- X: `https://x.com/YAPGAT0R` (`@YAPGAT0R`)
 
 The required GitHub Pages CNAME is `yapgator.com`. Do not modify DNS.
 
