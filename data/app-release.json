@@ -2,21 +2,19 @@
   "schemaVersion": 1,
   "platform": "android",
   "packageName": "com.yapgator.app",
-  "versionName": "1.0.2",
-  "versionCode": 3,
+  "versionName": "1.0.3",
+  "versionCode": 4,
   "minimumSdk": 26,
-  "apkUrl": "https://yapgator.com/downloads/Yapgator-v1.0.2.apk",
-  "sha256": "d1831e31ba34691ef3493f3ea2648b53f4a4b052cee20ecf61cca139639ba0ee",
-  "sizeBytes": 8877196,
-  "releasedAt": "2026-07-18T16:54:29Z",
+  "apkUrl": "https://yapgator.com/downloads/Yapgator-v1.0.3.apk",
+  "sha256": "f8b8e663c5302e8f373f124a328e3e141e43958a8845573cbef5b3224e1f3691",
+  "sizeBytes": 8546245,
+  "releasedAt": "2026-07-18T17:58:16Z",
   "mandatory": false,
   "changelog": [
-    "Native Yapgator launch dashboard",
-    "Official-link and official X verification",
-    "Contract verification preparation",
-    "Announcements and safety alerts",
-    "Bundled offline-first launch status and announcements",
-    "Clear verified, cached, offline, and unavailable states",
-    "Persistent navigation with a More destination for all eight native screens"
+    "Physical-device blank-screen startup hotfix",
+    "Immediate native shell with built-in prelaunch status",
+    "Visible loading, offline, and retry states",
+    "Network and parsing work moved behind the first frame",
+    "Release minification and resource shrinking disabled for startup validation"
   ]
 }
