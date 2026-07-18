@@ -1,4 +1,4 @@
-const CACHE_NAME = "yapgator-shell-v11";
+const CACHE_NAME = "yapgator-shell-v20";
 const FALLBACK_URL = "index.html";
 
 self.addEventListener("install", (event) => {
@@ -22,7 +22,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
-  if (url.pathname.endsWith("/data/telegram-status.json")) return;
+  if (url.pathname.endsWith("/assets/js/config.js")) return;
   if (request.mode !== "navigate") return;
 
   event.respondWith(
