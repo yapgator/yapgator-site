@@ -2,19 +2,19 @@
   "schemaVersion": 1,
   "platform": "android",
   "packageName": "com.yapgator.app",
-  "versionName": "1.0.3",
-  "versionCode": 4,
-  "minimumSdk": 26,
-  "apkUrl": "https://yapgator.com/downloads/Yapgator-v1.0.3.apk",
-  "sha256": "af45d3a1d470c423fca066d3eb517bbd16e86ef1d8dd3563b84c766e0e52a2b6",
-  "sizeBytes": 1018039,
-  "releasedAt": "2026-07-18T22:20:00Z",
+  "versionName": "1.0.5-godot-test",
+  "versionCode": 6,
+  "minimumSdk": 24,
+  "apkUrl": "https://yapgator.com/downloads/Yapgator-v1.0.5-godot-test.apk",
+  "sha256": "4737b27ce6d454d6454502e2b75c70ef558510ffcc25f93de48971bb7b124596",
+  "sizeBytes": 26794146,
+  "releasedAt": "2026-07-18T23:00:00Z",
   "mandatory": false,
   "changelog": [
-    "Physical-device blank-screen startup hotfix",
-    "Immediate native shell with built-in prelaunch status",
-    "Visible loading, offline, and retry states",
-    "Bundled-data validation moved behind the first frame",
-    "Release minification and resource shrinking disabled for startup validation"
+    "YAPGATOR: SWAMP SIEGE Android gameplay playtest",
+    "Backwater Beginning vertical slice and Training Beast encounter",
+    "Physical Gator Egg pickups, boost, Swamp Blast, Swamp Shop and Locker",
+    "Local save system and mobile touch controls",
+    "Physical Samsung gameplay confirmation is still pending"
   ]
 }
