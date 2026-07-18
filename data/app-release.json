@@ -6,15 +6,15 @@
   "versionCode": 4,
   "minimumSdk": 26,
   "apkUrl": "https://yapgator.com/downloads/Yapgator-v1.0.3.apk",
-  "sha256": "f8b8e663c5302e8f373f124a328e3e141e43958a8845573cbef5b3224e1f3691",
-  "sizeBytes": 8546245,
-  "releasedAt": "2026-07-18T17:58:16Z",
+  "sha256": "af45d3a1d470c423fca066d3eb517bbd16e86ef1d8dd3563b84c766e0e52a2b6",
+  "sizeBytes": 1018039,
+  "releasedAt": "2026-07-18T22:20:00Z",
   "mandatory": false,
   "changelog": [
     "Physical-device blank-screen startup hotfix",
     "Immediate native shell with built-in prelaunch status",
     "Visible loading, offline, and retry states",
-    "Network and parsing work moved behind the first frame",
+    "Bundled-data validation moved behind the first frame",
     "Release minification and resource shrinking disabled for startup validation"
   ]
 }
