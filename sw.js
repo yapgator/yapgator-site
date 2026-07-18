@@ -1,4 +1,18 @@
-const CACHE_NAME="yapgator-static-v30",OFFLINE="404.html",STATIC=[OFFLINE,"assets/css/styles.css?v=30","assets/js/config.js?v=30","assets/js/app.js?v=30","assets/images/app-icon-192.png"];
-self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(STATIC)));self.skipWaiting()});
-self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(key=>key===CACHE_NAME?null:caches.delete(key)))).then(()=>self.clients.claim())));
-self.addEventListener("fetch",event=>{const r=event.request,u=new URL(r.url);if(r.method!=="GET"||u.origin!==location.origin)return;if(u.pathname.startsWith("/data/")||u.pathname.startsWith("/downloads/"))return;if(r.mode==="navigate"){event.respondWith(fetch(r,{cache:"no-store"}).then(x=>{if(!x.ok)throw 0;return x}).catch(()=>caches.match(OFFLINE)));return}if(/\?v=30$/.test(u.href)){event.respondWith(caches.match(r).then(x=>x||fetch(r).then(y=>{if(y.ok)caches.open(CACHE_NAME).then(c=>c.put(r,y.clone()));return y})));}});
+self.addEventListener("install", event => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(key => key.startsWith("yapgator-")).map(key => caches.delete(key))
+      ))
+      .then(() => self.clients.claim())
+      .then(() => self.registration.unregister())
+      .then(() => self.clients.matchAll({ type: "window", includeUncontrolled: true }))
+      .then(clients => {
+        for (const client of clients) client.navigate(client.url);
+      })
+  );
+});
